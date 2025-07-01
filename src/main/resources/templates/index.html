@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Bridge Bidding Tutor</title>
+</head>
+
+<body>
+    <h1>Bridge Bidding Tutor</h1>
+    <form th:action="@{/new-deal}" method="post">
+        <button type="submit">Start New Deal</button>
+    </form>
+
+    <h2>Current Deal</h2>
+    <table border="1">
+        <tr th:each="hand,iterStat : ${deal.hands}">
+            <td>
+                <b th:text="${T(com.example.bridge.model.Player).values()[iterStat.index]}"></b><br />
+                <span th:each="card : ${hand.cards}" th:text="${card}"></span><br />
+                <form th:action="@{/advice/{handIndex}(handIndex=${iterStat.index})}" method="get">
+                    <button type="submit">Get Advice</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+
+    <h2>Bidding</h2>
+    <ul>
+        <li th:each="bid : ${biddingHistory}" th:text="${bid}"></li>
+    </ul>
+    <form th:action="@{/make-bid}" method="post">
+        <label>Level:
+            <select name="level">
+                <option th:each="i : ${#numbers.sequence(1,7)}" th:value="${i}" th:text="${i}"></option>
+            </select>
+        </label>
+        <label>Suit:
+            <select name="suit">
+                <option th:each="s : ${T(com.example.bridge.model.Card.Suit).values()}" th:value="${s}" th:text="${s}">
+                </option>
+            </select>
+        </label>
+        <button type="submit">Bid</button>
+        <button type="submit" name="pass" value="true">Pass</button>
+    </form>
+</body>
+
+</html>
