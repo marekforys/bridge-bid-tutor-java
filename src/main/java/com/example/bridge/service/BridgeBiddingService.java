@@ -51,4 +51,16 @@ public class BridgeBiddingService {
     public int getCurrentBidderIndex() {
         return currentBidderIndex;
     }
+
+    public boolean isBidAllowed(Bid newBid) {
+        if (newBid.isPass())
+            return true;
+        Bid highest = null;
+        for (Bid b : biddingHistory) {
+            if (!b.isPass() && (highest == null || b.compareTo(highest) > 0)) {
+                highest = b;
+            }
+        }
+        return highest == null || newBid.compareTo(highest) > 0;
+    }
 }

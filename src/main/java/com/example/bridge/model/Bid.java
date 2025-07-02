@@ -1,6 +1,6 @@
 package com.example.bridge.model;
 
-public class Bid {
+public class Bid implements Comparable<Bid> {
     private final int level; // 1-7, 0 for pass
     private final Card.Suit suit; // null for pass
     private final boolean isPass;
@@ -24,5 +24,15 @@ public class Bid {
     @Override
     public String toString() {
         return isPass ? "Pass" : (level + " " + (suit == Card.Suit.NOTRUMP ? "NT" : suit.getShortName()));
+    }
+
+    public int compareTo(Bid other) {
+        if (this.isPass)
+            return -1;
+        if (other.isPass)
+            return 1;
+        if (this.level != other.level)
+            return Integer.compare(this.level, other.level);
+        return Integer.compare(this.suit.ordinal(), other.suit.ordinal());
     }
 }

@@ -45,12 +45,21 @@ public class BridgeBiddingController {
     @PostMapping("/make-bid")
     public String makeBid(@RequestParam(required = false) Integer level,
             @RequestParam(required = false) Card.Suit suit,
-            @RequestParam(required = false) String pass) {
+            @RequestParam(required = false) String pass,
+            Model model) {
+        Bid bid;
         if (pass != null) {
-            biddingService.makeBid(new Bid());
+            bid = new Bid();
         } else if (level != null && suit != null) {
-            biddingService.makeBid(new Bid(level, suit));
+            bid = new Bid(level, suit);
+        } else {
+            return "redirect:/";
         }
+        if (!biddingService.isBidAllowed(bid)) {
+            model.addAttribute("bidError", "Bid must be higher than previous bids.");
+            return index(model);
+        }
+        biddingService.makeBid(bid);
         return "redirect:/";
     }
 
