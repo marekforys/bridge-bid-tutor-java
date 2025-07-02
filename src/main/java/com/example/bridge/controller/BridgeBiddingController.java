@@ -30,6 +30,9 @@ public class BridgeBiddingController {
             handsBySuit.add(hand.getSortedCardsBySuitName());
         }
         model.addAttribute("handsBySuit", handsBySuit);
+        model.addAttribute("currentBidderIndex", biddingService.getCurrentBidderIndex());
+        model.addAttribute("currentBidder",
+                com.example.bridge.model.Player.values()[biddingService.getCurrentBidderIndex()]);
         return "index";
     }
 

@@ -9,6 +9,7 @@ import java.util.*;
 public class BridgeBiddingService {
     private Deal currentDeal;
     private List<Bid> biddingHistory = new ArrayList<>();
+    private int currentBidderIndex = 0;
 
     public Deal startNewDeal() {
         // Stub: generate random hands
@@ -25,11 +26,13 @@ public class BridgeBiddingService {
         }
         currentDeal = new Deal(hands);
         biddingHistory.clear();
+        currentBidderIndex = 0;
         return currentDeal;
     }
 
     public void makeBid(Bid bid) {
         biddingHistory.add(bid);
+        currentBidderIndex = (currentBidderIndex + 1) % 4;
     }
 
     public String getAdvice(Hand hand, List<Bid> history) {
@@ -43,5 +46,9 @@ public class BridgeBiddingService {
 
     public List<Bid> getBiddingHistory() {
         return biddingHistory;
+    }
+
+    public int getCurrentBidderIndex() {
+        return currentBidderIndex;
     }
 }
