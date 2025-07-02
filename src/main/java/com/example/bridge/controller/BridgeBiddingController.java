@@ -17,7 +17,10 @@ public class BridgeBiddingController {
     private BridgeBiddingService biddingService;
 
     @GetMapping("/")
-    public String index(Model model) {
+    public String index(@RequestParam(value = "biddingSystem", required = false) String biddingSystem, Model model) {
+        if (biddingSystem != null) {
+            biddingService.setBiddingSystem(biddingSystem);
+        }
         Deal deal = biddingService.getCurrentDeal();
         if (deal == null) {
             deal = biddingService.startNewDeal();
@@ -34,6 +37,7 @@ public class BridgeBiddingController {
         model.addAttribute("currentBidder",
                 com.example.bridge.model.Player.values()[biddingService.getCurrentBidderIndex()]);
         model.addAttribute("biddingFinished", biddingService.isBiddingFinished());
+        model.addAttribute("biddingSystem", biddingService.getBiddingSystem());
         return "index";
     }
 
@@ -47,10 +51,14 @@ public class BridgeBiddingController {
     public String makeBid(@RequestParam(required = false) Integer level,
             @RequestParam(required = false) Card.Suit suit,
             @RequestParam(required = false) String pass,
-            Model model) {
+            @RequestParam(value = "biddingSystem", required = false) String biddingSystem,
+                    Model model) {
+        if (biddingSystem != null) {
+            biddingService.setBiddingSystem(biddingSystem);
+        }
         if (biddingService.isBiddingFinished()) {
             model.addAttribute("bidError", "Bidding is finished.");
-            return index(model);
+            return index(null, model);
         }
         Bid bid;
         if (pass != null) {
@@ -62,7 +70,7 @@ public class BridgeBiddingController {
         }
         if (!biddingService.isBidAllowed(bid)) {
             model.addAttribute("bidError", "Bid must be higher than previous bids.");
-            return index(model);
+            return index(null, model);
         }
         biddingService.makeBid(bid);
         return "redirect:/";
