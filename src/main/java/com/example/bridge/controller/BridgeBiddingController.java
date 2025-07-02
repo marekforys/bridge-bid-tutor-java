@@ -7,7 +7,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class BridgeBiddingController {
@@ -22,6 +24,12 @@ public class BridgeBiddingController {
         }
         model.addAttribute("deal", deal);
         model.addAttribute("biddingHistory", biddingService.getBiddingHistory());
+        // Add hands grouped by suit for template
+        List<Map<String, List<Card>>> handsBySuit = new ArrayList<>();
+        for (Hand hand : deal.getHands()) {
+            handsBySuit.add(hand.getSortedCardsBySuitName());
+        }
+        model.addAttribute("handsBySuit", handsBySuit);
         return "index";
     }
 

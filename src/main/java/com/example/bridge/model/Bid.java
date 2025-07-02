@@ -23,6 +23,6 @@ public class Bid {
 
     @Override
     public String toString() {
-        return isPass ? "Pass" : (level + " " + suit);
+        return isPass ? "Pass" : (level + " " + suit.getShortName());
     }
 }

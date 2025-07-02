@@ -16,7 +16,12 @@
         <tr th:each="hand,iterStat : ${deal.hands}">
             <td>
                 <b th:text="${T(com.example.bridge.model.Player).values()[iterStat.index]}"></b><br />
-                <span th:each="card : ${hand.cards}" th:text="${card}"></span><br />
+                <div th:with="suits=${T(com.example.bridge.model.Card.Suit).values()}">
+                    <div th:each="suit : ${suits}">
+                        <span th:text="${suit.getShortName()} + ':'"></span>
+                        <span th:each="card : ${handsBySuit[iterStat.index][suit.name()]}" th:text="${card}"></span><br />
+                    </div>
+                </div>
                 <form th:action="@{/advice/{handIndex}(handIndex=${iterStat.index})}" method="get">
                     <button type="submit">Get Advice</button>
                 </form>
