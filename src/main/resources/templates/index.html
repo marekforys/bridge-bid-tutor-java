@@ -118,13 +118,14 @@
     <h2>Bidding</h2>
     <div style="font-weight:bold; margin-bottom:10px;">Current Bidder: <span th:text="${currentBidder}"></span></div>
     <div th:if="${bidError}" style="color:red; font-weight:bold; margin-bottom:10px;" th:text="${bidError}"></div>
+    <div th:if="${biddingFinished}" style="color:green; font-weight:bold; margin-bottom:10px;">Bidding is finished.</div>
     <ul>
         <li th:each="bid,iterStat : ${biddingHistory}">
             <span th:text="${T(com.example.bridge.model.Player).values()[iterStat.index % 4]}"></span>:
             <span th:text="${bid}"></span>
         </li>
     </ul>
-    <form th:action="@{/make-bid}" method="post">
+    <form th:if="${!biddingFinished}" th:action="@{/make-bid}" method="post">
         <label>Level:
             <select name="level">
                 <option th:each="i : ${#numbers.sequence(1,7)}" th:value="${i}" th:text="${i}"></option>

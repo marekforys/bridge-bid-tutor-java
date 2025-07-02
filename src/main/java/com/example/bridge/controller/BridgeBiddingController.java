@@ -33,6 +33,7 @@ public class BridgeBiddingController {
         model.addAttribute("currentBidderIndex", biddingService.getCurrentBidderIndex());
         model.addAttribute("currentBidder",
                 com.example.bridge.model.Player.values()[biddingService.getCurrentBidderIndex()]);
+        model.addAttribute("biddingFinished", biddingService.isBiddingFinished());
         return "index";
     }
 
@@ -47,6 +48,10 @@ public class BridgeBiddingController {
             @RequestParam(required = false) Card.Suit suit,
             @RequestParam(required = false) String pass,
             Model model) {
+        if (biddingService.isBiddingFinished()) {
+            model.addAttribute("bidError", "Bidding is finished.");
+            return index(model);
+        }
         Bid bid;
         if (pass != null) {
             bid = new Bid();

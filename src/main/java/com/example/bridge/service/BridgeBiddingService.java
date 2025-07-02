@@ -63,4 +63,12 @@ public class BridgeBiddingService {
         }
         return highest == null || newBid.compareTo(highest) > 0;
     }
+
+    public boolean isBiddingFinished() {
+        if (biddingHistory.size() < 4)
+            return false;
+        int n = biddingHistory.size();
+        return biddingHistory.get(n - 1).isPass() && biddingHistory.get(n - 2).isPass()
+                && biddingHistory.get(n - 3).isPass();
+    }
 }
