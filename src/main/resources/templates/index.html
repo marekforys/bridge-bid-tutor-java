@@ -118,6 +118,17 @@
         <div class="main-flex">
             <div class="left-panel">
                 <h2>Bidding</h2>
+                <div style="margin-bottom: 18px;">
+                    <form id="biddingSystemForm" th:action="@{/}" method="get" style="display:inline;">
+                        <label for="biddingSystem" style="font-weight:bold;">Bidding System:</label>
+                        <select id="biddingSystem" name="biddingSystem" style="margin-left:10px;"
+                            onchange="document.getElementById('biddingSystemForm').submit();">
+                            <option value="natural" th:selected="${biddingSystem == 'natural'}">Natural</option>
+                            <option value="polish" th:selected="${biddingSystem == 'polish'}">Polish Club</option>
+                            <option value="precision" th:selected="${biddingSystem == 'precision'}">Precision Club</option>
+                        </select>
+                    </form>
+                </div>
                 <div class="bidding-section">
                     <div style="font-weight:bold; margin-bottom:10px;">Current Bidder: <span th:text="${currentBidder}"></span>
                     </div>
@@ -132,6 +143,7 @@
                         </li>
                     </ul>
                     <form th:if="${!biddingFinished}" th:action="@{/make-bid}" method="post">
+                        <input type="hidden" name="biddingSystem" th:value="${biddingSystem}" />
                         <label>Level:
                             <select name="level">
                                 <option th:each="i : ${#numbers.sequence(1,7)}" th:value="${i}" th:text="${i}"></option>

@@ -10,6 +10,7 @@ public class BridgeBiddingService {
     private Deal currentDeal;
     private List<Bid> biddingHistory = new ArrayList<>();
     private int currentBidderIndex = 0;
+    private String biddingSystem = "natural";
 
     public Deal startNewDeal() {
         // Stub: generate random hands
@@ -70,5 +71,13 @@ public class BridgeBiddingService {
         int n = biddingHistory.size();
         return biddingHistory.get(n - 1).isPass() && biddingHistory.get(n - 2).isPass()
                 && biddingHistory.get(n - 3).isPass();
+    }
+
+    public void setBiddingSystem(String system) {
+        this.biddingSystem = system;
+    }
+
+    public String getBiddingSystem() {
+        return biddingSystem;
     }
 }
