@@ -3,6 +3,19 @@
 
 <head>
     <title>Bridge Bidding Tutor</title>
+    <style>
+        body {
+            background-color: #228B22;
+        }
+    
+        table {
+            background-color: #228B22;
+        }
+    
+        td {
+            background-color: #228B22;
+        }
+    </style>
 </head>
 
 <body>
@@ -91,8 +104,8 @@
                                 <span th:case="'SPADES'">&#9824;</span>
                             </span>
                             <span th:each="card : ${handsBySuit[handIndex][suit.name()]}" th:text="${card}"></span><br />
-                            </div>
-                            </div>
+                        </div>
+                        </div>
                     <form th:action="@{/advice/{handIndex}(handIndex=${handIndex})}" method="get">
                         <button type="submit">Get Advice</button>
                     </form>
