@@ -2,9 +2,11 @@ package com.example.bridge.model;
 
 public class Card {
     public enum Suit {
-        CLUBS, DIAMONDS, HEARTS, SPADES;
+        CLUBS, DIAMONDS, HEARTS, SPADES, NOTRUMP;
 
         public String getShortName() {
+            if (this == NOTRUMP)
+                return "NT";
             return name().substring(0, 1);
         }
     }
