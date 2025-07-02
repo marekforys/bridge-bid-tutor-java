@@ -18,7 +18,12 @@
                 <b th:text="${T(com.example.bridge.model.Player).values()[iterStat.index]}"></b><br />
                 <div th:with="suits=${T(com.example.bridge.model.Card.Suit).values()}">
                     <div th:each="suit : ${suits}">
-                        <span th:text="${suit.getShortName()} + ':'"></span>
+                        <span th:switch="${suit.name()}">
+                            <span th:case="'CLUBS'">&#9827;</span>
+                            <span th:case="'DIAMONDS'">&#9830;</span>
+                            <span th:case="'HEARTS'">&#9829;</span>
+                            <span th:case="'SPADES'">&#9824;</span>
+                        </span>
                         <span th:each="card : ${handsBySuit[iterStat.index][suit.name()]}" th:text="${card}"></span><br />
                     </div>
                 </div>
