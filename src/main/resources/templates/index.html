@@ -7,11 +7,11 @@
         body {
             background-color: #228B22;
         }
-    
+
         table {
             background-color: #228B22;
         }
-    
+
         td {
             background-color: #228B22;
         }
@@ -127,7 +127,17 @@
         </label>
         <label>Suit:
             <select name="suit">
-                <option th:each="s : ${T(com.example.bridge.model.Card.Suit).values()}" th:value="${s}" th:text="${s}">
+                <option th:value="${T(com.example.bridge.model.Card.Suit).SPADES}">
+                    <span>&#9824;</span>
+                </option>
+                <option th:value="${T(com.example.bridge.model.Card.Suit).HEARTS}">
+                    <span>&#9829;</span>
+                </option>
+                <option th:value="${T(com.example.bridge.model.Card.Suit).DIAMONDS}">
+                    <span>&#9830;</span>
+                </option>
+                <option th:value="${T(com.example.bridge.model.Card.Suit).CLUBS}">
+                    <span>&#9827;</span>
                 </option>
             </select>
         </label>
