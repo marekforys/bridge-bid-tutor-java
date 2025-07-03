@@ -29,4 +29,12 @@ class BidTest {
         assertTrue(b3.compareTo(b2) > 0); // Level 3 > Level 2
         assertTrue(pass.compareTo(b1) < 0); // Pass < any bid
     }
+
+    @Test
+    void testBidDealRelationship() {
+        Deal deal = new Deal();
+        Bid bid = new Bid(2, Card.Suit.HEARTS);
+        bid.setDeal(deal);
+        assertEquals(deal, bid.getDeal());
+    }
 }
