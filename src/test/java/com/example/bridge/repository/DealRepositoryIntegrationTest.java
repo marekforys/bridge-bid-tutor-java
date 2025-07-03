@@ -16,26 +16,34 @@ class DealRepositoryIntegrationTest {
 
     @Test
     void testPersistAndRetrieveDealWithAllData() {
+        Deal deal = new Deal();
         // Create cards
         Card c1 = new Card(Card.Suit.HEARTS, Card.Rank.ACE);
         Card c2 = new Card(Card.Suit.SPADES, Card.Rank.KING);
         // Create hands
         Hand h1 = new Hand();
+        h1.setPlayer(Player.NORTH);
+        h1.setDeal(deal);
+        c1.setHand(h1);
+        c2.setHand(h1);
         h1.setCards(List.of(c1, c2));
         // Create bids
         Bid b1 = new Bid(1, Card.Suit.CLUBS);
+        b1.setDeal(deal);
+        b1.setPlayer(Player.NORTH);
         Bid b2 = Bid.pass();
-        // Create deal
-        Deal deal = new Deal();
-        deal.setBiddingSystem("natural");
-        deal.setHands(List.of(h1));
-        deal.setBids(List.of(b1, b2));
+        b2.setDeal(deal);
+        b2.setPlayer(Player.EAST);
         // Set relationships
         h1.setDeal(deal);
         c1.setHand(h1);
         c2.setHand(h1);
         b1.setDeal(deal);
         b2.setDeal(deal);
+        // Create deal
+        deal.setBiddingSystem("natural");
+        deal.setHands(List.of(h1));
+        deal.setBids(List.of(b1, b2));
         // Persist
         Deal saved = dealRepository.save(deal);
         assertNotNull(saved.getId());

@@ -35,6 +35,8 @@ class BidTest {
         Deal deal = new Deal();
         Bid bid = new Bid(2, Card.Suit.HEARTS);
         bid.setDeal(deal);
+        bid.setPlayer(Player.NORTH);
         assertEquals(deal, bid.getDeal());
+        assertEquals(Player.NORTH, bid.getPlayer());
     }
 }
