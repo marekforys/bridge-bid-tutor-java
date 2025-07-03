@@ -260,6 +260,30 @@
                                             <td></td>
                                             </tr>
                                             </table>
+                <div style="margin-top:30px;">
+                    <h3>Past Deals</h3>
+                    <div style="max-height:250px; overflow-y:auto; background:#fff3; border-radius:8px; padding:10px;">
+                        <div th:if="${#lists.isEmpty(allDeals)}">No past deals.</div>
+                        <table th:if="${!#lists.isEmpty(allDeals)}" style="width:100%; font-size:0.95em;">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>System</th>
+                                    <th>Bidding</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="deal : ${allDeals}">
+                                    <td th:text="${deal.id}"></td>
+                                    <td th:text="${deal.biddingSystem}"></td>
+                                    <td>
+                                        <span th:each="bid : ${deal.bids}" th:text="${bid}" style="margin-right:4px;"></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
             </div>
             </div>

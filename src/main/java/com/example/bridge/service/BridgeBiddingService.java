@@ -92,4 +92,8 @@ public class BridgeBiddingService {
             dealRepository.save(currentDeal);
         }
     }
+
+    public List<Deal> getAllDeals() {
+        return dealRepository.findAll();
+    }
 }

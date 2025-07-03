@@ -38,6 +38,7 @@ public class BridgeBiddingController {
                 com.example.bridge.model.Player.values()[biddingService.getCurrentBidderIndex()]);
         model.addAttribute("biddingFinished", biddingService.isBiddingFinished());
         model.addAttribute("biddingSystem", biddingService.getBiddingSystem());
+        model.addAttribute("allDeals", biddingService.getAllDeals());
         return "index";
     }
 
