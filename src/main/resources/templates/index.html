@@ -112,10 +112,7 @@
 <body>
     <div class="container">
         <h1>Bridge Bidding Tutor</h1>
-        <form th:action="@{/new-deal}" method="post" class="centered">
-            <button type="submit">Start New Deal</button>
-        </form>
-        <div class="main-flex">
+        <div class="main-flex" style="justify-content:space-between;">
             <div class="left-panel">
                 <h2>Bidding</h2>
                 <div style="margin-bottom: 18px;">
@@ -169,7 +166,10 @@
                     </form>
                 </div>
             </div>
-            <div class="right-panel">
+            <div class="center-panel" style="min-width:400px; max-width:600px; flex:2; text-align:center;">
+                <form th:action="@{/new-deal}" method="post" class="centered" style="margin-bottom:20px;">
+                    <button type="submit">Start New Deal</button>
+                </form>
                 <h2>Current Deal</h2>
                 <table border="0" style="margin:auto;">
                     <tr>
@@ -261,8 +261,34 @@
                                             </tr>
                                             </table>
             </div>
+            <div class="right-panel">
+                <div style="margin-bottom:30px;">
+                    <h3>Past Deals</h3>
+                    <div style="max-height:250px; overflow-y:auto; background:#fff3; border-radius:8px; padding:10px;">
+                        <div th:if="${#lists.isEmpty(allDeals)}">No past deals.</div>
+                        <table th:if="${!#lists.isEmpty(allDeals)}" style="width:100%; font-size:0.95em;">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>System</th>
+                                    <th>Bidding</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="deal : ${allDeals}">
+                                    <td th:text="${deal.id}"></td>
+                                    <td th:text="${deal.biddingSystem}"></td>
+                                    <td>
+                                        <span th:each="bid : ${deal.bids}" th:text="${#strings.toString(bid)}" style="margin-right:4px;"></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            </div>
+        </div>
+        </div>
 </body>
 
 </html>

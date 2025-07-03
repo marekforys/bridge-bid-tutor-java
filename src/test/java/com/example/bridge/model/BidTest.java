@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BidTest {
     @Test
     void testPassBid() {
-        Bid pass = new Bid();
+        Bid pass = Bid.pass();
         assertTrue(pass.isPass());
         assertEquals("Pass", pass.toString());
     }
@@ -28,5 +28,15 @@ class BidTest {
         assertTrue(b2.compareTo(b1) > 0); // Spades > Hearts
         assertTrue(b3.compareTo(b2) > 0); // Level 3 > Level 2
         assertTrue(pass.compareTo(b1) < 0); // Pass < any bid
+    }
+
+    @Test
+    void testBidDealRelationship() {
+        Deal deal = new Deal();
+        Bid bid = new Bid(2, Card.Suit.HEARTS);
+        bid.setDeal(deal);
+        bid.setPlayer(Player.NORTH);
+        assertEquals(deal, bid.getDeal());
+        assertEquals(Player.NORTH, bid.getPlayer());
     }
 }

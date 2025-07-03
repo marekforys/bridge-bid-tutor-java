@@ -1,15 +1,55 @@
 package com.example.bridge.model;
 
+import jakarta.persistence.*;
 import java.util.List;
 
+@Entity
 public class Deal {
-    private final List<Hand> hands; // 4 hands
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    public Deal(List<Hand> hands) {
+    private String biddingSystem;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "deal")
+    private List<Hand> hands;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "deal", fetch = FetchType.EAGER)
+    private List<Bid> bids;
+
+    public Deal() {
+    }
+
+    public Deal(List<Hand> hands, String biddingSystem) {
         this.hands = hands;
+        this.biddingSystem = biddingSystem;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public List<Hand> getHands() {
         return hands;
+    }
+
+    public void setHands(List<Hand> hands) {
+        this.hands = hands;
+    }
+
+    public List<Bid> getBids() {
+        return bids;
+    }
+
+    public void setBids(List<Bid> bids) {
+        this.bids = bids;
+    }
+
+    public String getBiddingSystem() {
+        return biddingSystem;
+    }
+
+    public void setBiddingSystem(String biddingSystem) {
+        this.biddingSystem = biddingSystem;
     }
 }

@@ -1,12 +1,16 @@
 package com.example.bridge.service;
 
 import com.example.bridge.model.*;
+import com.example.bridge.repository.DealRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
 public class BridgeBiddingService {
+    @Autowired
+    private DealRepository dealRepository;
     private Deal currentDeal;
     private List<Bid> biddingHistory = new ArrayList<>();
     private int currentBidderIndex = 0;
@@ -23,9 +27,19 @@ public class BridgeBiddingService {
         Collections.shuffle(deck);
         List<Hand> hands = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
-            hands.add(new Hand(deck.subList(i * 13, (i + 1) * 13)));
+            List<Card> cards = deck.subList(i * 13, (i + 1) * 13);
+            Hand hand = new Hand(cards);
+            hand.setPlayer(Player.values()[i]);
+            for (Card card : cards) {
+                card.setHand(hand);
+            }
+            hands.add(hand);
         }
-        currentDeal = new Deal(hands);
+        Deal deal = new Deal(hands, "");
+        for (Hand hand : hands) {
+            hand.setDeal(deal);
+        }
+        currentDeal = deal;
         biddingHistory.clear();
         currentBidderIndex = 0;
         return currentDeal;
@@ -79,5 +93,22 @@ public class BridgeBiddingService {
 
     public String getBiddingSystem() {
         return biddingSystem;
+    }
+
+    public void saveDealIfFinished() {
+        if (isBiddingFinished() && currentDeal != null) {
+            for (int i = 0; i < biddingHistory.size(); i++) {
+                Bid bid = biddingHistory.get(i);
+                bid.setDeal(currentDeal);
+                bid.setPlayer(Player.values()[i % 4]);
+            }
+            currentDeal.setBids(new ArrayList<>(biddingHistory));
+            currentDeal.setBiddingSystem(biddingSystem);
+            dealRepository.save(currentDeal);
+        }
+    }
+
+    public List<Deal> getAllDeals() {
+        return dealRepository.findAll();
     }
 }

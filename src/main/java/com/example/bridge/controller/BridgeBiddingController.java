@@ -38,6 +38,7 @@ public class BridgeBiddingController {
                 com.example.bridge.model.Player.values()[biddingService.getCurrentBidderIndex()]);
         model.addAttribute("biddingFinished", biddingService.isBiddingFinished());
         model.addAttribute("biddingSystem", biddingService.getBiddingSystem());
+        model.addAttribute("allDeals", biddingService.getAllDeals());
         return "index";
     }
 
@@ -62,7 +63,7 @@ public class BridgeBiddingController {
         }
         Bid bid;
         if (pass != null) {
-            bid = new Bid();
+            bid = Bid.pass();
         } else if (level != null && suit != null) {
             bid = new Bid(level, suit);
         } else {
@@ -73,6 +74,7 @@ public class BridgeBiddingController {
             return index(null, model);
         }
         biddingService.makeBid(bid);
+        biddingService.saveDealIfFinished();
         return "redirect:/";
     }
 
