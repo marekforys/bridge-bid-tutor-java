@@ -73,6 +73,7 @@ public class BridgeBiddingController {
             return index(null, model);
         }
         biddingService.makeBid(bid);
+        biddingService.saveDealIfFinished();
         return "redirect:/";
     }
 

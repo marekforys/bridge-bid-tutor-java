@@ -26,11 +26,11 @@ class BridgeBiddingServiceTest {
 
     @Test
     void testBiddingFinished() {
-        service.makeBid(new Bid()); // Pass
-        service.makeBid(new Bid()); // Pass
-        service.makeBid(new Bid()); // Pass
+        service.makeBid(Bid.pass()); // Pass
+        service.makeBid(Bid.pass()); // Pass
+        service.makeBid(Bid.pass()); // Pass
         assertFalse(service.isBiddingFinished());
-        service.makeBid(new Bid()); // Pass
+        service.makeBid(Bid.pass()); // Pass
         assertTrue(service.isBiddingFinished());
     }
 

@@ -1,12 +1,16 @@
 package com.example.bridge.service;
 
 import com.example.bridge.model.*;
+import com.example.bridge.repository.DealRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
 public class BridgeBiddingService {
+    @Autowired
+    private DealRepository dealRepository;
     private Deal currentDeal;
     private List<Bid> biddingHistory = new ArrayList<>();
     private int currentBidderIndex = 0;
@@ -25,7 +29,7 @@ public class BridgeBiddingService {
         for (int i = 0; i < 4; i++) {
             hands.add(new Hand(deck.subList(i * 13, (i + 1) * 13)));
         }
-        currentDeal = new Deal(hands);
+        currentDeal = new Deal(hands, "");
         biddingHistory.clear();
         currentBidderIndex = 0;
         return currentDeal;
@@ -79,5 +83,13 @@ public class BridgeBiddingService {
 
     public String getBiddingSystem() {
         return biddingSystem;
+    }
+
+    public void saveDealIfFinished() {
+        if (isBiddingFinished() && currentDeal != null) {
+            currentDeal.setBids(new ArrayList<>(biddingHistory));
+            currentDeal.setBiddingSystem(biddingSystem);
+            dealRepository.save(currentDeal);
+        }
     }
 }

@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BidTest {
     @Test
     void testPassBid() {
-        Bid pass = new Bid();
+        Bid pass = Bid.pass();
         assertTrue(pass.isPass());
         assertEquals("Pass", pass.toString());
     }

@@ -1,6 +1,45 @@
 package com.example.bridge.model;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Card {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Hand hand;
+
+    @Enumerated(EnumType.STRING)
+    private Suit suit;
+    @Enumerated(EnumType.STRING)
+    private Rank rank;
+
+    public Card() {
+    }
+
+    public Card(Suit suit, Rank rank) {
+        this.suit = suit;
+        this.rank = rank;
+    }
+
+    public Suit getSuit() { return suit; }
+    public Rank getRank() { return rank; }
+
+    public Hand getHand() {
+        return hand;
+    }
+
+    public void setHand(Hand hand) {
+        this.hand = hand;
+    }
+
+    @Override
+    public String toString() {
+        return rank.getShortName();
+    }
+
     public enum Suit {
         CLUBS, DIAMONDS, HEARTS, SPADES, NOTRUMP;
 
@@ -10,6 +49,7 @@ public class Card {
             return name().substring(0, 1);
         }
     }
+
     public enum Rank {
         TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, ACE;
 
@@ -44,21 +84,5 @@ public class Card {
             }
             throw new IllegalStateException();
         }
-    }
-
-    private final Suit suit;
-    private final Rank rank;
-
-    public Card(Suit suit, Rank rank) {
-        this.suit = suit;
-        this.rank = rank;
-    }
-
-    public Suit getSuit() { return suit; }
-    public Rank getRank() { return rank; }
-
-    @Override
-    public String toString() {
-        return rank.getShortName();
     }
 }
