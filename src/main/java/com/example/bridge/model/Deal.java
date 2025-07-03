@@ -14,7 +14,7 @@ public class Deal {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "deal")
     private List<Hand> hands;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "deal")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "deal", fetch = FetchType.EAGER)
     private List<Bid> bids;
 
     public Deal() {

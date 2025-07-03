@@ -15,6 +15,8 @@ public class Bid implements Comparable<Bid> {
     @Enumerated(EnumType.STRING)
     private Card.Suit suit;
     private boolean isPass;
+    @Enumerated(EnumType.STRING)
+    private Player player;
 
     public Bid() {
     }
@@ -36,6 +38,14 @@ public class Bid implements Comparable<Bid> {
     public int getLevel() { return level; }
     public Card.Suit getSuit() { return suit; }
     public boolean isPass() { return isPass; }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
 
     public Deal getDeal() {
         return deal;

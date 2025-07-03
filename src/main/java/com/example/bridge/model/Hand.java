@@ -17,6 +17,9 @@ public class Hand {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "hand")
     private List<Card> cards;
 
+    @Enumerated(EnumType.STRING)
+    private Player player;
+
     public Hand() {
     }
 
@@ -61,5 +64,13 @@ public class Hand {
                                 list -> list.stream()
                                         .sorted((c1, c2) -> c2.getRank().ordinal() - c1.getRank().ordinal())
                                         .collect(Collectors.toList()))));
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 }
