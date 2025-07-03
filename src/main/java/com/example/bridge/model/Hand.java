@@ -1,18 +1,45 @@
 package com.example.bridge.model;
 
+import javax.persistence.*;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Entity
 public class Hand {
-    private final List<Card> cards;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deal_id")
+    private Deal deal;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "hand_id")
+    private List<Card> cards;
+
+    public Hand() {
+    }
 
     public Hand(List<Card> cards) {
         this.cards = cards;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public List<Card> getCards() {
         return cards;
+    }
+
+    public Deal getDeal() {
+        return deal;
+    }
+
+    public void setDeal(Deal deal) {
+        this.deal = deal;
     }
 
     public Map<Card.Suit, List<Card>> getCardsBySuit() {
