@@ -62,7 +62,7 @@ public class BridgeBiddingController {
         }
         Bid bid;
         if (pass != null) {
-            bid = new Bid();
+            bid = Bid.pass();
         } else if (level != null && suit != null) {
             bid = new Bid(level, suit);
         } else {
