@@ -1,9 +1,24 @@
 package com.example.bridge.model;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Bid implements Comparable<Bid> {
-    private final int level; // 1-7, 0 for pass
-    private final Card.Suit suit; // null for pass
-    private final boolean isPass;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deal_id")
+    private Deal deal;
+
+    private int level; // 1-7, 0 for pass
+    @Enumerated(EnumType.STRING)
+    private Card.Suit suit; // null for pass
+    private boolean isPass;
+
+    public Bid() {
+    }
 
     public Bid(int level, Card.Suit suit) {
         this.level = level;
@@ -20,6 +35,14 @@ public class Bid implements Comparable<Bid> {
     public int getLevel() { return level; }
     public Card.Suit getSuit() { return suit; }
     public boolean isPass() { return isPass; }
+
+    public Deal getDeal() {
+        return deal;
+    }
+
+    public void setDeal(Deal deal) {
+        this.deal = deal;
+    }
 
     @Override
     public String toString() {
