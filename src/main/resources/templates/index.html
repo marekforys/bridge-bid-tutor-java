@@ -49,6 +49,9 @@
             vertical-align: top;
             text-align: center;
         }
+        .nowrap-cards {
+            white-space: nowrap;
+        }
         .bidding-section {
             background: #fff3;
             border-radius: 8px;
@@ -88,6 +91,36 @@
         ul { list-style: none; padding: 0; }
         form { margin: 0; }
         button { font-size: 1em; margin-top: 10px; }
+        table.current-deal-table {
+            background-color: #228B22;
+            border-spacing: 1px 0;
+            margin: 0 auto;
+            font-size: 0.95em;
+            max-width: 98vw;
+            width: auto;
+            table-layout: auto;
+        }
+        table.current-deal-table td {
+            background-color: #228B22;
+            padding: 0 2px 0 2px;
+            font-size: 1em;
+            vertical-align: middle;
+            text-align: center;
+        }
+        .card-row-scroll {
+            max-width: 160px;
+            overflow-x: auto;
+            white-space: nowrap;
+            display: block;
+        }
+        .card-span {
+            margin-right: 1px;
+        }
+        .deal-table-scroll-wrap {
+            max-width: 99vw;
+            overflow-x: auto;
+            margin: 0 auto;
+        }
     </style>
     <script>
         function selectSuit(value, iconHtml) {
@@ -166,100 +199,131 @@
                     </form>
                 </div>
             </div>
-            <div class="center-panel" style="min-width:400px; max-width:600px; flex:2; text-align:center;">
+            <div class="center-panel" style="min-width:650px; max-width:900px; flex:2.5; text-align:center;">
                 <form th:action="@{/new-deal}" method="post" class="centered" style="margin-bottom:20px;">
                     <button type="submit">Start New Deal</button>
                 </form>
                 <h2>Current Deal</h2>
-                <table border="0" style="margin:auto;">
-                    <tr>
-                        <td></td>
-                        <td style="text-align:center;">
-                            <div th:with="handIndex=0">
-                                <b>NORTH</b><br />
-                                <div th:with="suits=${T(com.example.bridge.model.Card.Suit).values()}">
-                                    <div th:each="suit : ${suits}">
-                                        <span th:switch="${suit.name()}">
-                                            <span th:case="'CLUBS'">&#9827;</span>
-                                            <span th:case="'DIAMONDS'" style="color:red">&#9830;</span>
-                                            <span th:case="'HEARTS'" style="color:red">&#9829;</span>
-                                            <span th:case="'SPADES'">&#9824;</span>
-                                            </span>
-                                            <span th:each="card : ${handsBySuit[handIndex][suit.name()]}" th:text="${card}"></span><br />
-                                            </div>
-                                            </div>
-                                            <form th:action="@{/advice/{handIndex}(handIndex=${handIndex})}" method="get">
-                                                <button type="submit">Get Advice</button>
-                                            </form>
-                                            </div>
-                                            </td>
-                                            <td></td>
-                                            </tr>
-                                            <tr>
-                                                <td style="vertical-align:top; text-align:center;">
-                                                    <div th:with="handIndex=3">
-                                                        <b>WEST</b><br />
-                                                        <div th:with="suits=${T(com.example.bridge.model.Card.Suit).values()}">
-                                                            <div th:each="suit : ${suits}">
-                                                                <span th:switch="${suit.name()}">
-                                                                    <span th:case="'CLUBS'">&#9827;</span>
-                                            <span th:case="'DIAMONDS'" style="color:red">&#9830;</span>
-                                            <span th:case="'HEARTS'" style="color:red">&#9829;</span>
-                                            <span th:case="'SPADES'">&#9824;</span>
-                                            </span>
-                                            <span th:each="card : ${handsBySuit[handIndex][suit.name()]}" th:text="${card}"></span><br />
-                                            </div>
-                                            </div>
-                                            <form th:action="@{/advice/{handIndex}(handIndex=${handIndex})}" method="get">
-                                                <button type="submit">Get Advice</button>
-                                            </form>
-                                            </div>
-                                            </td>
-                                            <td></td>
-                                            <td style="vertical-align:top; text-align:center;">
-                                                <div th:with="handIndex=1">
-                                                    <b>EAST</b><br />
-                                                    <div th:with="suits=${T(com.example.bridge.model.Card.Suit).values()}">
-                                                        <div th:each="suit : ${suits}">
-                                                            <span th:switch="${suit.name()}">
-                                                                <span th:case="'CLUBS'">&#9827;</span>
-                                            <span th:case="'DIAMONDS'" style="color:red">&#9830;</span>
-                                            <span th:case="'HEARTS'" style="color:red">&#9829;</span>
-                                            <span th:case="'SPADES'">&#9824;</span>
-                                            </span>
-                                            <span th:each="card : ${handsBySuit[handIndex][suit.name()]}" th:text="${card}"></span><br />
-                                            </div>
-                                            </div>
-                                            <form th:action="@{/advice/{handIndex}(handIndex=${handIndex})}" method="get">
-                                                <button type="submit">Get Advice</button>
-                                            </form>
-                                            </div>
-                                            </td>
-                                            </tr>
-                                            <tr>
+                <div class="deal-table-scroll-wrap">
+                    <table class="current-deal-table" border="0">
+                        <tr>
+                            <td></td>
+                            <td style="text-align:center;">
+                                <div th:with="handIndex=0">
+                                    <b>NORTH</b><br />
+                                    <div th:with="suits=${T(com.example.bridge.model.Card.Suit).values()}">
+                                        <table style="margin:auto; background:transparent; border:none;">
+                                            <tr th:each="suit : ${suits}">
+                                                <td style="text-align:right; width:30px; border:none; background:transparent;">
+                                                    <span th:switch="${suit.name()}">
+                                                        <span th:case="'CLUBS'">&#9827;</span>
+                                                        <span th:case="'DIAMONDS'" style="color:red">&#9830;</span>
+                                                        <span th:case="'HEARTS'" style="color:red">&#9829;</span>
+                                                        <span th:case="'SPADES'">&#9824;</span>
+                                                    </span>
+                                                </td>
+                                                <td style="text-align:left; border:none; background:transparent; padding:0;">
+                                                    <span class="card-row-scroll">
+                                                        <span th:each="card : ${handsBySuit[handIndex][suit.name()]}" th:text="${card}" class="card-span"></span>
+                                                    </span>
+                                                </td>
+                                                </tr>
+                                                </table>
+                                                </div>
+                                                <form th:action="@{/advice/{handIndex}(handIndex=${handIndex})}" method="get">
+                                                    <button type="submit">Get Advice</button>
+                                                </form>
+                                                </div>
+                                                </td>
                                                 <td></td>
-                                                <td style="text-align:center;">
-                                                    <div th:with="handIndex=2">
-                                                        <b>SOUTH</b><br />
+                                                </tr>
+                                                <tr>
+                                                    <td style="vertical-align:top; text-align:center;">
+                                                        <div th:with="handIndex=3">
+                                                            <b>WEST</b><br />
+                                                            <div th:with="suits=${T(com.example.bridge.model.Card.Suit).values()}">
+                                        <table style="margin:auto; background:transparent; border:none;">
+                                            <tr th:each="suit : ${suits}">
+                                                <td style="text-align:right; width:30px; border:none; background:transparent;">
+                                                    <span th:switch="${suit.name()}">
+                                                        <span th:case="'CLUBS'">&#9827;</span>
+                                                        <span th:case="'DIAMONDS'" style="color:red">&#9830;</span>
+                                                        <span th:case="'HEARTS'" style="color:red">&#9829;</span>
+                                                        <span th:case="'SPADES'">&#9824;</span>
+                                                    </span>
+                                                </td>
+                                                <td style="text-align:left; border:none; background:transparent;">
+                                                    <span th:each="card : ${handsBySuit[handIndex][suit.name()]}" th:text="${card}" style="margin-right:4px;"
+                                                        class="nowrap-cards"></span>
+                                                </td>
+                                                </tr>
+                                                </table>
+                                                </div>
+                                                <form th:action="@{/advice/{handIndex}(handIndex=${handIndex})}" method="get">
+                                                    <button type="submit">Get Advice</button>
+                                                </form>
+                                                </div>
+                                                </td>
+                                                <td></td>
+                                                <td style="vertical-align:top; text-align:center;">
+                                                    <div th:with="handIndex=1">
+                                                        <b>EAST</b><br />
                                                         <div th:with="suits=${T(com.example.bridge.model.Card.Suit).values()}">
-                                                            <div th:each="suit : ${suits}">
-                                                                <span th:switch="${suit.name()}">
-                                                                    <span th:case="'CLUBS'">&#9827;</span>
-                                            <span th:case="'DIAMONDS'" style="color:red">&#9830;</span>
-                                            <span th:case="'HEARTS'" style="color:red">&#9829;</span>
-                                            <span th:case="'SPADES'">&#9824;</span>
-                                            </span>
-                                            <span th:each="card : ${handsBySuit[handIndex][suit.name()]}" th:text="${card}"></span><br />
-                                            </div>
-                                            </div>
-                                            <form th:action="@{/advice/{handIndex}(handIndex=${handIndex})}" method="get">
-                                                <button type="submit">Get Advice</button>
-                                            </form>
-                                            </div>
-                                            </td>
-                                            <td></td>
-                                            </tr>
-                                            </table>
+                                        <table style="margin:auto; background:transparent; border:none;">
+                                            <tr th:each="suit : ${suits}">
+                                                <td style="text-align:right; width:30px; border:none; background:transparent;">
+                                                    <span th:switch="${suit.name()}">
+                                                        <span th:case="'CLUBS'">&#9827;</span>
+                                                        <span th:case="'DIAMONDS'" style="color:red">&#9830;</span>
+                                                        <span th:case="'HEARTS'" style="color:red">&#9829;</span>
+                                                        <span th:case="'SPADES'">&#9824;</span>
+                                                    </span>
+                                                </td>
+                                                <td style="text-align:left; border:none; background:transparent;">
+                                                    <span th:each="card : ${handsBySuit[handIndex][suit.name()]}" th:text="${card}" style="margin-right:4px;"
+                                                        class="nowrap-cards"></span>
+                                                </td>
+                                                </tr>
+                                                </table>
+                                                </div>
+                                                <form th:action="@{/advice/{handIndex}(handIndex=${handIndex})}" method="get">
+                                                    <button type="submit">Get Advice</button>
+                                                </form>
+                                                </div>
+                                                </td>
+                                                </tr>
+                                                <tr>
+                                                    <td></td>
+                                                    <td style="text-align:center;">
+                                                        <div th:with="handIndex=2">
+                                                            <b>SOUTH</b><br />
+                                                            <div th:with="suits=${T(com.example.bridge.model.Card.Suit).values()}">
+                                        <table style="margin:auto; background:transparent; border:none;">
+                                            <tr th:each="suit : ${suits}">
+                                                <td style="text-align:right; width:30px; border:none; background:transparent;">
+                                                    <span th:switch="${suit.name()}">
+                                                        <span th:case="'CLUBS'">&#9827;</span>
+                                                        <span th:case="'DIAMONDS'" style="color:red">&#9830;</span>
+                                                        <span th:case="'HEARTS'" style="color:red">&#9829;</span>
+                                                        <span th:case="'SPADES'">&#9824;</span>
+                                                    </span>
+                                                </td>
+                                                <td style="text-align:left; border:none; background:transparent;">
+                                                    <span th:each="card : ${handsBySuit[handIndex][suit.name()]}" th:text="${card}" style="margin-right:4px;"
+                                                        class="nowrap-cards"></span>
+                                                </td>
+                                                </tr>
+                                                </table>
+                                                </div>
+                                                <form th:action="@{/advice/{handIndex}(handIndex=${handIndex})}" method="get">
+                                                    <button type="submit">Get Advice</button>
+                                                </form>
+                                                </div>
+                                                </td>
+                                                <td></td>
+                                                </tr>
+                                                </table>
+                </div>
             </div>
             <div class="right-panel">
                 <div style="margin-bottom:30px; text-align:center;">
