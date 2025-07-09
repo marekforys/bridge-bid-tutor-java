@@ -211,7 +211,7 @@
                             <td style="text-align:center;">
                                 <div th:with="handIndex=0">
                                     <b>NORTH</b><br />
-                                    <div th:with="suits=${T(com.example.bridge.model.Card.Suit).values()}">
+                                    <div th:with="suits=${suitsOrdered}">
                                         <table style="margin:auto; background:transparent; border:none;">
                                             <tr th:each="suit : ${suits}">
                                                 <td style="text-align:right; width:30px; border:none; background:transparent;">
@@ -241,7 +241,7 @@
                                                     <td style="vertical-align:top; text-align:center;">
                                                         <div th:with="handIndex=3">
                                                             <b>WEST</b><br />
-                                                            <div th:with="suits=${T(com.example.bridge.model.Card.Suit).values()}">
+                                                            <div th:with="suits=${suitsOrdered}">
                                         <table style="margin:auto; background:transparent; border:none;">
                                             <tr th:each="suit : ${suits}">
                                                 <td style="text-align:right; width:30px; border:none; background:transparent;">
@@ -268,7 +268,7 @@
                                                 <td style="vertical-align:top; text-align:center;">
                                                     <div th:with="handIndex=1">
                                                         <b>EAST</b><br />
-                                                        <div th:with="suits=${T(com.example.bridge.model.Card.Suit).values()}">
+                                                        <div th:with="suits=${suitsOrdered}">
                                         <table style="margin:auto; background:transparent; border:none;">
                                             <tr th:each="suit : ${suits}">
                                                 <td style="text-align:right; width:30px; border:none; background:transparent;">
@@ -297,7 +297,7 @@
                                                     <td style="text-align:center;">
                                                         <div th:with="handIndex=2">
                                                             <b>SOUTH</b><br />
-                                                            <div th:with="suits=${T(com.example.bridge.model.Card.Suit).values()}">
+                                                            <div th:with="suits=${suitsOrdered}">
                                         <table style="margin:auto; background:transparent; border:none;">
                                             <tr th:each="suit : ${suits}">
                                                 <td style="text-align:right; width:30px; border:none; background:transparent;">

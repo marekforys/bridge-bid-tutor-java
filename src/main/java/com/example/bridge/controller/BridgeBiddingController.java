@@ -39,6 +39,11 @@ public class BridgeBiddingController {
         model.addAttribute("biddingFinished", biddingService.isBiddingFinished());
         model.addAttribute("biddingSystem", biddingService.getBiddingSystem());
         model.addAttribute("allDeals", biddingService.getAllDeals());
+        model.addAttribute("suitsOrdered", java.util.List.of(
+                com.example.bridge.model.Card.Suit.SPADES,
+                com.example.bridge.model.Card.Suit.HEARTS,
+                com.example.bridge.model.Card.Suit.DIAMONDS,
+                com.example.bridge.model.Card.Suit.CLUBS));
         return "index";
     }
 
