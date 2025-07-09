@@ -87,4 +87,10 @@ public class BridgeBiddingController {
         Hand hand = deal.getHands().get(handIndex);
         return biddingService.getAdvice(hand, biddingService.getBiddingHistory());
     }
+
+    @GetMapping("/past-deals")
+    public String pastDeals(Model model) {
+        model.addAttribute("allDeals", biddingService.getAllDeals());
+        return "past-deals";
+    }
 }
