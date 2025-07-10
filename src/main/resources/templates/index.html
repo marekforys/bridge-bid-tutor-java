@@ -199,135 +199,43 @@
                     </form>
                 </div>
             </div>
-            <div class="center-panel" style="min-width:650px; max-width:900px; flex:2.5; text-align:center;">
-                <form th:action="@{/new-deal}" method="post" class="centered" style="margin-bottom:20px;">
-                    <button type="submit">Start New Deal</button>
-                </form>
-                <h2>Current Deal</h2>
-                <div class="deal-table-scroll-wrap">
-                    <table class="current-deal-table" border="0">
-                        <tr>
-                            <td></td>
-                            <td style="text-align:center;">
-                                <div th:with="handIndex=0">
-                                    <b>NORTH</b><br />
-                                    <div th:with="suits=${suitsOrdered}">
-                                        <table style="margin:auto; background:transparent; border:none;">
-                                            <tr th:each="suit : ${suits}">
-                                                <td style="text-align:right; width:30px; border:none; background:transparent;">
-                                                    <span th:switch="${suit.name()}">
-                                                        <span th:case="'CLUBS'">&#9827;</span>
-                                                        <span th:case="'DIAMONDS'" style="color:red">&#9830;</span>
-                                                        <span th:case="'HEARTS'" style="color:red">&#9829;</span>
-                                                        <span th:case="'SPADES'">&#9824;</span>
-                                                    </span>
-                                                </td>
-                                                <td style="text-align:left; border:none; background:transparent; padding:0;">
-                                                    <span class="card-row-scroll">
-                                                        <span th:each="card : ${handsBySuit[handIndex][suit.name()]}" th:text="${card}" class="card-span"></span>
-                                                    </span>
-                                                </td>
-                                                </tr>
-                                                </table>
-                                                </div>
-                                                <form th:action="@{/advice/{handIndex}(handIndex=${handIndex})}" method="get">
-                                                    <button type="submit">Get Advice</button>
-                                                </form>
-                                                </div>
-                                                </td>
-                                                <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="vertical-align:top; text-align:center;">
-                                                        <div th:with="handIndex=3">
-                                                            <b>WEST</b><br />
-                                                            <div th:with="suits=${suitsOrdered}">
-                                        <table style="margin:auto; background:transparent; border:none;">
-                                            <tr th:each="suit : ${suits}">
-                                                <td style="text-align:right; width:30px; border:none; background:transparent;">
-                                                    <span th:switch="${suit.name()}">
-                                                        <span th:case="'CLUBS'">&#9827;</span>
-                                                        <span th:case="'DIAMONDS'" style="color:red">&#9830;</span>
-                                                        <span th:case="'HEARTS'" style="color:red">&#9829;</span>
-                                                        <span th:case="'SPADES'">&#9824;</span>
-                                                    </span>
-                                                </td>
-                                                <td style="text-align:left; border:none; background:transparent;">
-                                                    <span th:each="card : ${handsBySuit[handIndex][suit.name()]}" th:text="${card}" style="margin-right:4px;"
-                                                        class="nowrap-cards"></span>
-                                                </td>
-                                                </tr>
-                                                </table>
-                                                </div>
-                                                <form th:action="@{/advice/{handIndex}(handIndex=${handIndex})}" method="get">
-                                                    <button type="submit">Get Advice</button>
-                                                </form>
-                                                </div>
-                                                </td>
-                                                <td></td>
-                                                <td style="vertical-align:top; text-align:center;">
-                                                    <div th:with="handIndex=1">
-                                                        <b>EAST</b><br />
-                                                        <div th:with="suits=${suitsOrdered}">
-                                        <table style="margin:auto; background:transparent; border:none;">
-                                            <tr th:each="suit : ${suits}">
-                                                <td style="text-align:right; width:30px; border:none; background:transparent;">
-                                                    <span th:switch="${suit.name()}">
-                                                        <span th:case="'CLUBS'">&#9827;</span>
-                                                        <span th:case="'DIAMONDS'" style="color:red">&#9830;</span>
-                                                        <span th:case="'HEARTS'" style="color:red">&#9829;</span>
-                                                        <span th:case="'SPADES'">&#9824;</span>
-                                                    </span>
-                                                </td>
-                                                <td style="text-align:left; border:none; background:transparent;">
-                                                    <span th:each="card : ${handsBySuit[handIndex][suit.name()]}" th:text="${card}" style="margin-right:4px;"
-                                                        class="nowrap-cards"></span>
-                                                </td>
-                                                </tr>
-                                                </table>
-                                                </div>
-                                                <form th:action="@{/advice/{handIndex}(handIndex=${handIndex})}" method="get">
-                                                    <button type="submit">Get Advice</button>
-                                                </form>
-                                                </div>
-                                                </td>
-                                                </tr>
-                                                <tr>
-                                                    <td></td>
-                                                    <td style="text-align:center;">
-                                                        <div th:with="handIndex=2">
-                                                            <b>SOUTH</b><br />
-                                                            <div th:with="suits=${suitsOrdered}">
-                                        <table style="margin:auto; background:transparent; border:none;">
-                                            <tr th:each="suit : ${suits}">
-                                                <td style="text-align:right; width:30px; border:none; background:transparent;">
-                                                    <span th:switch="${suit.name()}">
-                                                        <span th:case="'CLUBS'">&#9827;</span>
-                                                        <span th:case="'DIAMONDS'" style="color:red">&#9830;</span>
-                                                        <span th:case="'HEARTS'" style="color:red">&#9829;</span>
-                                                        <span th:case="'SPADES'">&#9824;</span>
-                                                    </span>
-                                                </td>
-                                                <td style="text-align:left; border:none; background:transparent;">
-                                                    <span th:each="card : ${handsBySuit[handIndex][suit.name()]}" th:text="${card}" style="margin-right:4px;"
-                                                        class="nowrap-cards"></span>
-                                                </td>
-                                                </tr>
-                                                </table>
-                                                </div>
-                                                <form th:action="@{/advice/{handIndex}(handIndex=${handIndex})}" method="get">
-                                                    <button type="submit">Get Advice</button>
-                                                </form>
-                                                </div>
-                                                </td>
-                                                <td></td>
-                                                </tr>
-                                                </table>
-                </div>
+            <div class="center-panel">
+                <div style="text-align:center; margin-bottom:10px;">
+                    <form th:action="@{/new-deal}" method="post" style="display:inline; margin-right:10px;">
+                        <button type="submit">Start New Deal</button>
+                    </form>
+                    <button onclick="window.open('/current-deal-popup', 'CurrentDealPopup', 'width=600,height=600,scrollbars=yes')">Show
+                        Table in Popup</button>
+                    </div>
+                    <h2>Your Hand (<span th:text="${hand.player}"></span>)</h2>
+                    <table class="current-deal-table">
+                        <tbody>
+                            <tr th:each="suit : ${suitsOrdered}">
+                                <td style="text-align:left; background:transparent; padding:0;">
+                                    <span th:switch="${suit.name()}">
+                                <span th:case="'CLUBS'">
+                                    <span style="color:black">&#9827;</span>
+                                </span>
+                                <span th:case="'DIAMONDS'">
+                                    <span style="color:red">&#9830;</span>
+                                </span>
+                                <span th:case="'HEARTS'">
+                                    <span style="color:red">&#9829;</span>
+                                </span>
+                                <span th:case="'SPADES'">
+                                    <span style="color:black">&#9824;</span>
+                                </span>
+                            </span>
+                            <span th:text="${handBySuit[suit.name()] != null ? #strings.listJoin(handBySuit[suit.name()], ' ') : ''}"></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
             <div class="right-panel">
                 <div style="margin-bottom:30px; text-align:center;">
-                    <button onclick="window.open('/past-deals', '_blank')">Show Past Deals</button>
+                    <button onclick="window.open('/past-deals', 'PastDealsPopup', 'width=600,height=600,scrollbars=yes')">Show Past
+                        Deals</button>
                 </div>
             </div>
         </div>

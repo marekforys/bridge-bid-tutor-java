@@ -25,14 +25,21 @@ public class BridgeBiddingController {
         if (deal == null) {
             deal = biddingService.startNewDeal();
         }
+        // Pick a random hand for the main screen
+        List<Hand> hands = deal.getHands();
+        int randomIndex = new java.util.Random().nextInt(hands.size());
+        Hand hand = hands.get(randomIndex);
+        model.addAttribute("hand", hand);
+        model.addAttribute("handIndex", randomIndex);
+        model.addAttribute("handBySuit", hand.getSortedCardsBySuitName());
         model.addAttribute("deal", deal);
-        model.addAttribute("biddingHistory", biddingService.getBiddingHistory());
-        // Add hands grouped by suit for template
-        List<Map<String, List<Card>>> handsBySuit = new ArrayList<>();
-        for (Hand hand : deal.getHands()) {
-            handsBySuit.add(hand.getSortedCardsBySuitName());
+        // For popup: all hands by suit
+        List<Map<String, List<Card>>> handsBySuit = new java.util.ArrayList<>();
+        for (Hand h : deal.getHands()) {
+            handsBySuit.add(h.getSortedCardsBySuitName());
         }
         model.addAttribute("handsBySuit", handsBySuit);
+        model.addAttribute("biddingHistory", biddingService.getBiddingHistory());
         model.addAttribute("currentBidderIndex", biddingService.getCurrentBidderIndex());
         model.addAttribute("currentBidder",
                 com.example.bridge.model.Player.values()[biddingService.getCurrentBidderIndex()]);
@@ -40,10 +47,11 @@ public class BridgeBiddingController {
         model.addAttribute("biddingSystem", biddingService.getBiddingSystem());
         model.addAttribute("allDeals", biddingService.getAllDeals());
         model.addAttribute("suitsOrdered", java.util.List.of(
-                com.example.bridge.model.Card.Suit.SPADES,
-                com.example.bridge.model.Card.Suit.HEARTS,
-                com.example.bridge.model.Card.Suit.DIAMONDS,
-                com.example.bridge.model.Card.Suit.CLUBS));
+            com.example.bridge.model.Card.Suit.SPADES,
+            com.example.bridge.model.Card.Suit.HEARTS,
+            com.example.bridge.model.Card.Suit.DIAMONDS,
+            com.example.bridge.model.Card.Suit.CLUBS
+        ));
         return "index";
     }
 
@@ -97,5 +105,26 @@ public class BridgeBiddingController {
     public String pastDeals(Model model) {
         model.addAttribute("allDeals", biddingService.getAllDeals());
         return "past-deals";
+    }
+
+    @GetMapping("/current-deal-popup")
+    public String currentDealPopup(Model model) {
+        Deal deal = biddingService.getCurrentDeal();
+        if (deal == null) {
+            deal = biddingService.startNewDeal();
+        }
+        model.addAttribute("deal", deal);
+        List<Map<String, List<Card>>> handsBySuit = new java.util.ArrayList<>();
+        for (Hand h : deal.getHands()) {
+            handsBySuit.add(h.getSortedCardsBySuitName());
+        }
+        model.addAttribute("handsBySuit", handsBySuit);
+        model.addAttribute("suitsOrdered", java.util.List.of(
+            com.example.bridge.model.Card.Suit.SPADES,
+            com.example.bridge.model.Card.Suit.HEARTS,
+            com.example.bridge.model.Card.Suit.DIAMONDS,
+            com.example.bridge.model.Card.Suit.CLUBS
+        ));
+        return "current-deal-popup";
     }
 }

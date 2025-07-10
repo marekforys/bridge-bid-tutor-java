@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Current Deal Table</title>
+    <style>
+        body {
+            background-color: #228B22;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 20px auto;
+            background: #fff3;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        table.current-deal-table {
+            background-color: #228B22;
+            border-spacing: 1px 0;
+            margin: 0 auto;
+            font-size: 0.95em;
+            max-width: 98vw;
+            width: auto;
+            table-layout: auto;
+        }
+
+        table.current-deal-table td {
+            background-color: #228B22;
+            padding: 0 2px 0 2px;
+            font-size: 1em;
+            vertical-align: middle;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Current Deal</h2>
+        <table class="current-deal-table" style="margin:auto;">
+            <tr>
+                <td></td>
+                <td style="text-align:center;">
+                    <b th:text="${deal.hands[0].player}"></b>
+                    <table style="margin:auto; background:transparent; border:none;">
+                        <tr th:each="suit : ${suitsOrdered}">
+                            <td style="text-align:left; border:none; background:transparent; padding:0;">
+                                <span th:switch="${suit.name()}">
+                                    <span th:case="'CLUBS'">
+                                        <span style="color:black">&#9827;</span>
+                                    </span>
+                                    <span th:case="'DIAMONDS'">
+                                        <span style="color:red">&#9830;</span>
+                                    </span>
+                                    <span th:case="'HEARTS'">
+                                        <span style="color:red">&#9829;</span>
+                                    </span>
+                                    <span th:case="'SPADES'">
+                                        <span style="color:black">&#9824;</span>
+                                    </span>
+                                </span>
+                                <span
+                                    th:text="${handsBySuit[0][suit.name()] != null ? #strings.listJoin(handsBySuit[0][suit.name()], ' ') : ''}"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="vertical-align:top; text-align:center;">
+                    <b th:text="${deal.hands[3].player}"></b>
+                    <table style="margin:auto; background:transparent; border:none;">
+                        <tr th:each="suit : ${suitsOrdered}">
+                            <td style="text-align:left; border:none; background:transparent; padding:0;">
+                                <span th:switch="${suit.name()}">
+                                    <span th:case="'CLUBS'">
+                                        <span style="color:black">&#9827;</span>
+                                    </span>
+                                    <span th:case="'DIAMONDS'">
+                                        <span style="color:red">&#9830;</span>
+                                    </span>
+                                    <span th:case="'HEARTS'">
+                                        <span style="color:red">&#9829;</span>
+                                    </span>
+                                    <span th:case="'SPADES'">
+                                        <span style="color:black">&#9824;</span>
+                                    </span>
+                                </span>
+                                <span
+                                    th:text="${handsBySuit[3][suit.name()] != null ? #strings.listJoin(handsBySuit[3][suit.name()], ' ') : ''}"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td></td>
+                <td style="vertical-align:top; text-align:center;">
+                    <b th:text="${deal.hands[1].player}"></b>
+                    <table style="margin:auto; background:transparent; border:none;">
+                        <tr th:each="suit : ${suitsOrdered}">
+                            <td style="text-align:left; border:none; background:transparent; padding:0;">
+                                <span th:switch="${suit.name()}">
+                                    <span th:case="'CLUBS'">
+                                        <span style="color:black">&#9827;</span>
+                                    </span>
+                                    <span th:case="'DIAMONDS'">
+                                        <span style="color:red">&#9830;</span>
+                                    </span>
+                                    <span th:case="'HEARTS'">
+                                        <span style="color:red">&#9829;</span>
+                                    </span>
+                                    <span th:case="'SPADES'">
+                                        <span style="color:black">&#9824;</span>
+                                    </span>
+                                </span>
+                                <span
+                                    th:text="${handsBySuit[1][suit.name()] != null ? #strings.listJoin(handsBySuit[1][suit.name()], ' ') : ''}"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="text-align:center;">
+                    <b th:text="${deal.hands[2].player}"></b>
+                    <table style="margin:auto; background:transparent; border:none;">
+                        <tr th:each="suit : ${suitsOrdered}">
+                            <td style="text-align:left; border:none; background:transparent; padding:0;">
+                                <span th:switch="${suit.name()}">
+                                    <span th:case="'CLUBS'">
+                                        <span style="color:black">&#9827;</span>
+                                    </span>
+                                    <span th:case="'DIAMONDS'">
+                                        <span style="color:red">&#9830;</span>
+                                    </span>
+                                    <span th:case="'HEARTS'">
+                                        <span style="color:red">&#9829;</span>
+                                    </span>
+                                    <span th:case="'SPADES'">
+                                        <span style="color:black">&#9824;</span>
+                                    </span>
+                                </span>
+                                <span
+                                    th:text="${handsBySuit[2][suit.name()] != null ? #strings.listJoin(handsBySuit[2][suit.name()], ' ') : ''}"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>
