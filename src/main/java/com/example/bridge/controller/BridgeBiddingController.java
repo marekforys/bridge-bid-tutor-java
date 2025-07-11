@@ -189,11 +189,38 @@ public class BridgeBiddingController {
         List<Deal> allDeals = biddingService.getAllDeals();
         // For each deal, trim trailing passes for display
         List<List<Bid>> allBidsTrimmed = new ArrayList<>();
+        List<String> finalBids = new ArrayList<>();
+        List<String> dealers = new ArrayList<>();
+        List<String> playerHands = new ArrayList<>();
         for (Deal deal : allDeals) {
-            allBidsTrimmed.add(getBiddingWithoutTrailingPasses(deal.getBids()));
+            List<Bid> trimmed = getBiddingWithoutTrailingPasses(deal.getBids());
+            allBidsTrimmed.add(trimmed);
+            // Final bid: last non-pass bid or "-"
+            String lastBid = "-";
+            for (int i = trimmed.size() - 1; i >= 0; i--) {
+                if (!trimmed.get(i).isPass()) {
+                    lastBid = renderBidHtml(trimmed.get(i));
+                    break;
+                }
+            }
+            finalBids.add(lastBid);
+            // Dealer: always North (or could be deal.getHands().get(0).getPlayer())
+            String dealer = deal.getHands() != null && !deal.getHands().isEmpty()
+                    ? deal.getHands().get(0).getPlayer().toString()
+                    : "-";
+            dealers.add(dealer.equals("-") ? "-" : dealer.substring(0, 1));
+            // Player hand: show South (deal.getHands().get(2)) as example, or could be
+            // based on user
+            String playerHand = deal.getHands() != null && deal.getHands().size() > 2
+                    ? deal.getHands().get(2).getPlayer().toString()
+                    : "-";
+            playerHands.add(playerHand.equals("-") ? "-" : playerHand.substring(0, 1));
         }
         model.addAttribute("allDeals", allDeals);
         model.addAttribute("allBidsTrimmed", allBidsTrimmed);
+        model.addAttribute("finalBids", finalBids);
+        model.addAttribute("dealers", dealers);
+        model.addAttribute("playerHands", playerHands);
         return "past-deals";
     }
 

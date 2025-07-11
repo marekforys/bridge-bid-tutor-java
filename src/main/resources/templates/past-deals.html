@@ -56,6 +56,9 @@
                     <th>ID</th>
                     <th>System</th>
                     <th>Bidding</th>
+                    <th>Final Bid</th>
+                    <th>Dealer</th>
+                    <th>Player Hand</th>
                 </tr>
             </thead>
             <tbody>
@@ -66,6 +69,9 @@
                         <span th:each="bid : ${allBidsTrimmed[dealStat.index]}" th:utext="${@bridgeBiddingController.renderBidHtml(bid)}"
                             style="margin-right:4px;"></span>
                     </td>
+                    <td th:utext="${finalBids[dealStat.index]}"></td>
+                    <td th:text="${dealers[dealStat.index]}"></td>
+                    <td th:text="${playerHands[dealStat.index]}"></td>
                 </tr>
             </tbody>
         </table>
