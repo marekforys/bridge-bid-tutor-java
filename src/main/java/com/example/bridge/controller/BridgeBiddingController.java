@@ -43,6 +43,18 @@ public class BridgeBiddingController {
         int totalCards = hand.getCards() == null ? 0 : hand.getCards().size();
         model.addAttribute("totalCardsInHand", totalCards);
         model.addAttribute("deal", deal);
+        // Precompute biddingRounds for the template
+        List<Bid> biddingHistory = biddingService.getBiddingHistory();
+        List<String[]> biddingRounds = new ArrayList<>();
+        for (int i = 0; i < biddingHistory.size(); i += 4) {
+            String[] round = new String[4];
+            for (int j = 0; j < 4; j++) {
+                int idx = i + j;
+                round[j] = (idx < biddingHistory.size()) ? biddingHistory.get(idx).toString() : "-";
+            }
+            biddingRounds.add(round);
+        }
+        model.addAttribute("biddingRounds", biddingRounds);
         // For popup: all hands by suit
         List<Map<String, List<Card>>> handsBySuit = new java.util.ArrayList<>();
         for (Hand h : deal.getHands()) {
