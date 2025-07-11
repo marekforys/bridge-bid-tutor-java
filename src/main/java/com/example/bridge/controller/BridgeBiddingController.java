@@ -152,9 +152,27 @@ public class BridgeBiddingController {
         return biddingService.getAdvice(hand, biddingService.getBiddingHistory());
     }
 
+    // Helper to trim last 3 passes from bidding history if present
+    public List<Bid> getBiddingWithoutTrailingPasses(List<Bid> bids) {
+        if (bids == null || bids.size() < 4)
+            return bids;
+        int n = bids.size();
+        if (bids.get(n - 1).isPass() && bids.get(n - 2).isPass() && bids.get(n - 3).isPass()) {
+            return bids.subList(0, n - 3);
+        }
+        return bids;
+    }
+
     @GetMapping("/past-deals")
     public String pastDeals(Model model) {
-        model.addAttribute("allDeals", biddingService.getAllDeals());
+        List<Deal> allDeals = biddingService.getAllDeals();
+        // For each deal, trim trailing passes for display
+        List<List<Bid>> allBidsTrimmed = new ArrayList<>();
+        for (Deal deal : allDeals) {
+            allBidsTrimmed.add(getBiddingWithoutTrailingPasses(deal.getBids()));
+        }
+        model.addAttribute("allDeals", allDeals);
+        model.addAttribute("allBidsTrimmed", allBidsTrimmed);
         return "past-deals";
     }
 
@@ -177,5 +195,34 @@ public class BridgeBiddingController {
             com.example.bridge.model.Card.Suit.CLUBS
         ));
         return "current-deal-popup";
+    }
+
+    // Helper for Thymeleaf to render bid with suit icon
+    public String renderBidHtml(Bid bid) {
+        if (bid == null)
+            return "-";
+        if (bid.isPass())
+            return "Pass";
+        String suitIcon;
+        switch (bid.getSuit()) {
+            case SPADES:
+                suitIcon = "<span style='color:black'>&#9824;</span>";
+                break;
+            case HEARTS:
+                suitIcon = "<span style='color:red'>&#9829;</span>";
+                break;
+            case DIAMONDS:
+                suitIcon = "<span style='color:red'>&#9830;</span>";
+                break;
+            case CLUBS:
+                suitIcon = "<span style='color:black'>&#9827;</span>";
+                break;
+            case NOTRUMP:
+                suitIcon = "NT";
+                break;
+            default:
+                suitIcon = "";
+        }
+        return bid.getLevel() + " " + suitIcon;
     }
 }

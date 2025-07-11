@@ -59,11 +59,11 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="deal : ${allDeals}">
+                <tr th:each="deal,dealStat : ${allDeals}">
                     <td th:text="${deal.id}"></td>
                     <td th:text="${deal.biddingSystem}"></td>
                     <td>
-                        <span th:each="bid : ${deal.bids}" th:text="${#strings.toString(bid)}"
+                        <span th:each="bid : ${allBidsTrimmed[dealStat.index]}" th:utext="${@bridgeBiddingController.renderBidHtml(bid)}"
                             style="margin-right:4px;"></span>
                     </td>
                 </tr>
