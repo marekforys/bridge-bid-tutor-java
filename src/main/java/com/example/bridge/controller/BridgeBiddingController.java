@@ -225,9 +225,4 @@ public class BridgeBiddingController {
         }
         return bid.getLevel() + " " + suitIcon;
     }
-
-    @RequestMapping("/error")
-    public String handleError() {
-        return "error-custom";
-    }
 }
