@@ -200,13 +200,16 @@
                     </form>
                     <button onclick="window.open('/current-deal-popup', 'CurrentDealPopup', 'width=600,height=600,scrollbars=yes')">Show
                         Table in Popup</button>
-                    </div>
-                    <h2>Your Hand (<span th:text="${hand.player}"></span>)</h2>
-                    <table class="current-deal-table">
-                        <tbody>
-                            <tr th:each="suit : ${suitsOrdered}">
-                                <td style="text-align:left; background:transparent; padding:0;">
-                                    <span th:switch="${suit.name()}">
+                </div>
+                <div style="text-align:center; font-weight:bold; margin-bottom:6px;">
+                    Dealer: <span th:text="${dealer}"></span>
+                </div>
+                <h2>Your Hand (<span th:text="${hand.player}"></span>)</h2>
+                <table class="current-deal-table">
+                    <tbody>
+                        <tr th:each="suit : ${suitsOrdered}">
+                            <td style="text-align:left; background:transparent; padding:0;">
+                                <span th:switch="${suit.name()}">
                                 <span th:case="'CLUBS'">
                                     <span style="color:black">&#9827;</span>
                                 </span>

@@ -33,6 +33,9 @@ public class BridgeBiddingController {
                     + (h.getCards() == null ? "null" : h.getCards()));
             handIdx++;
         }
+        // Set the dealer for the current deal (cycling N, E, S, W)
+        Player dealer = biddingService.getCurrentDealer();
+        model.addAttribute("dealer", dealer.toString().substring(0, 1));
         // Pick the current bidder's hand for the main screen
         int currentBidderIndex = biddingService.getCurrentBidderIndex();
         List<Hand> hands = deal.getHands();
@@ -192,7 +195,8 @@ public class BridgeBiddingController {
         List<String> finalBids = new ArrayList<>();
         List<String> dealers = new ArrayList<>();
         List<String> playerHands = new ArrayList<>();
-        for (Deal deal : allDeals) {
+        for (int dealIdx = 0; dealIdx < allDeals.size(); dealIdx++) {
+            Deal deal = allDeals.get(dealIdx);
             List<Bid> trimmed = getBiddingWithoutTrailingPasses(deal.getBids());
             allBidsTrimmed.add(trimmed);
             // Final bid: last non-pass bid or "-"
@@ -204,11 +208,9 @@ public class BridgeBiddingController {
                 }
             }
             finalBids.add(lastBid);
-            // Dealer: always North (or could be deal.getHands().get(0).getPlayer())
-            String dealer = deal.getHands() != null && !deal.getHands().isEmpty()
-                    ? deal.getHands().get(0).getPlayer().toString()
-                    : "-";
-            dealers.add(dealer.equals("-") ? "-" : dealer.substring(0, 1));
+            // Dealer: cycle N, E, S, W by deal index
+            String dealer = com.example.bridge.model.Player.values()[dealIdx % 4].toString();
+            dealers.add(dealer.substring(0, 1));
             // Player hand: show South (deal.getHands().get(2)) as example, or could be
             // based on user
             String playerHand = deal.getHands() != null && deal.getHands().size() > 2

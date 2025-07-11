@@ -15,6 +15,7 @@ public class BridgeBiddingService {
     private List<Bid> biddingHistory = new ArrayList<>();
     private int currentBidderIndex = 0;
     private String biddingSystem = "natural";
+    private int dealNumber = 0;
 
     public Deal startNewDeal() {
         // Stub: generate random hands
@@ -42,7 +43,10 @@ public class BridgeBiddingService {
         }
         currentDeal = deal;
         biddingHistory.clear();
-        currentBidderIndex = 0;
+        // Increment dealNumber first, then set dealer and currentBidderIndex
+        dealNumber++;
+        int dealerIndex = ((dealNumber - 1) % 4 + 4) % 4;
+        currentBidderIndex = dealerIndex;
         return currentDeal;
     }
 
@@ -111,5 +115,9 @@ public class BridgeBiddingService {
 
     public List<Deal> getAllDeals() {
         return dealRepository.findAll();
+    }
+
+    public Player getCurrentDealer() {
+        return Player.values()[((dealNumber - 1) % 4 + 4) % 4];
     }
 }
