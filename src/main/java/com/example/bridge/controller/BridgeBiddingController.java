@@ -33,12 +33,12 @@ public class BridgeBiddingController {
                     + (h.getCards() == null ? "null" : h.getCards()));
             handIdx++;
         }
-        // Pick a random hand for the main screen
+        // Pick the current bidder's hand for the main screen
+        int currentBidderIndex = biddingService.getCurrentBidderIndex();
         List<Hand> hands = deal.getHands();
-        int randomIndex = new java.util.Random().nextInt(hands.size());
-        Hand hand = hands.get(randomIndex);
+        Hand hand = hands.get(currentBidderIndex);
         model.addAttribute("hand", hand);
-        model.addAttribute("handIndex", randomIndex);
+        model.addAttribute("handIndex", currentBidderIndex);
         model.addAttribute("handBySuit", hand.getSortedCardsBySuitName());
         int totalCards = hand.getCards() == null ? 0 : hand.getCards().size();
         model.addAttribute("totalCardsInHand", totalCards);
