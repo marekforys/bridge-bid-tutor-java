@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Error</title>
+    <style>
+        body {
+            background: #228B22;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 80px;
+        }
+
+        .error-box {
+            background: rgba(0, 0, 0, 0.2);
+            display: inline-block;
+            padding: 40px 60px;
+            border-radius: 16px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5em;
+        }
+
+        p {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="error-box">
+        <h1>Something went wrong</h1>
+        <p>Sorry, an unexpected error occurred.<br />
+            Please try again or contact support if the problem persists.</p>
+        <p><a href="/" style="color:#fff; text-decoration:underline;">Return to Home</a></p>
+    </div>
+</body>
+
+</html>
