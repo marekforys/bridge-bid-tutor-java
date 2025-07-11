@@ -19,7 +19,8 @@ public class BridgeBiddingService {
     public Deal startNewDeal() {
         // Stub: generate random hands
         List<Card> deck = new ArrayList<>();
-        for (Card.Suit suit : Card.Suit.values()) {
+        for (Card.Suit suit : java.util.List.of(Card.Suit.CLUBS, Card.Suit.DIAMONDS, Card.Suit.HEARTS,
+                Card.Suit.SPADES)) {
             for (Card.Rank rank : Card.Rank.values()) {
                 deck.add(new Card(suit, rank));
             }

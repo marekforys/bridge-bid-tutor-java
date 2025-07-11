@@ -25,6 +25,14 @@ public class BridgeBiddingController {
         if (deal == null) {
             deal = biddingService.startNewDeal();
         }
+        // Debug: print number of cards in each hand
+        int handIdx = 0;
+        for (Hand h : deal.getHands()) {
+            System.out.println("Hand " + handIdx + " (" + h.getPlayer() + ") has "
+                    + (h.getCards() == null ? 0 : h.getCards().size()) + " cards: "
+                    + (h.getCards() == null ? "null" : h.getCards()));
+            handIdx++;
+        }
         // Pick a random hand for the main screen
         List<Hand> hands = deal.getHands();
         int randomIndex = new java.util.Random().nextInt(hands.size());
@@ -32,6 +40,8 @@ public class BridgeBiddingController {
         model.addAttribute("hand", hand);
         model.addAttribute("handIndex", randomIndex);
         model.addAttribute("handBySuit", hand.getSortedCardsBySuitName());
+        int totalCards = hand.getCards() == null ? 0 : hand.getCards().size();
+        model.addAttribute("totalCardsInHand", totalCards);
         model.addAttribute("deal", deal);
         // For popup: all hands by suit
         List<Map<String, List<Card>>> handsBySuit = new java.util.ArrayList<>();
