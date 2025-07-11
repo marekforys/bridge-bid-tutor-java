@@ -41,7 +41,28 @@ public class BridgeBiddingController {
         model.addAttribute("handIndex", currentBidderIndex);
         model.addAttribute("handBySuit", hand.getSortedCardsBySuitName());
         int totalCards = hand.getCards() == null ? 0 : hand.getCards().size();
-        model.addAttribute("totalCardsInHand", totalCards);
+        int totalPoints = 0;
+        if (hand.getCards() != null) {
+            for (Card card : hand.getCards()) {
+                switch (card.getRank()) {
+                    case ACE:
+                        totalPoints += 4;
+                        break;
+                    case KING:
+                        totalPoints += 3;
+                        break;
+                    case QUEEN:
+                        totalPoints += 2;
+                        break;
+                    case JACK:
+                        totalPoints += 1;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        model.addAttribute("totalPointsInHand", totalPoints);
         model.addAttribute("deal", deal);
         // Precompute biddingRounds for the template
         List<Bid> biddingHistory = biddingService.getBiddingHistory();
