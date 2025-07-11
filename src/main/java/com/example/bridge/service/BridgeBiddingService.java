@@ -9,8 +9,7 @@ import java.util.*;
 
 @Service
 public class BridgeBiddingService {
-    @Autowired
-    private DealRepository dealRepository;
+    DealRepository dealRepository;
     private Deal currentDeal;
     private List<Bid> biddingHistory = new ArrayList<>();
     private int currentBidderIndex = 0;
@@ -102,10 +101,11 @@ public class BridgeBiddingService {
 
     public void saveDealIfFinished() {
         if (isBiddingFinished() && currentDeal != null) {
+            int dealerIndex = ((dealNumber - 1) % 4 + 4) % 4;
             for (int i = 0; i < biddingHistory.size(); i++) {
                 Bid bid = biddingHistory.get(i);
                 bid.setDeal(currentDeal);
-                bid.setPlayer(Player.values()[i % 4]);
+                bid.setPlayer(Player.values()[(dealerIndex + i) % 4]);
             }
             currentDeal.setBids(new ArrayList<>(biddingHistory));
             currentDeal.setBiddingSystem(biddingSystem);

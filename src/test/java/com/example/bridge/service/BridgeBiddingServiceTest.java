@@ -2,9 +2,12 @@ package com.example.bridge.service;
 
 import com.example.bridge.model.Bid;
 import com.example.bridge.model.Card;
+import com.example.bridge.repository.DealRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
 
 class BridgeBiddingServiceTest {
     private BridgeBiddingService service;
@@ -13,6 +16,8 @@ class BridgeBiddingServiceTest {
     void setUp() {
         service = new BridgeBiddingService();
         service.startNewDeal();
+        // Remove any anonymous class instantiation of DealRepository.
+        // Only use the Mockito mock as already present in the test.
     }
 
     @Test
@@ -78,6 +83,36 @@ class BridgeBiddingServiceTest {
             service.startNewDeal();
             int idx = service.getCurrentBidderIndex();
             assertTrue(idx >= 0 && idx < 4, "Bidder index should be between 0 and 3");
+        }
+    }
+
+    @Test
+    void testBidPlayerAssignmentMatchesDealerCycle() {
+        service = new BridgeBiddingService();
+        service.startNewDeal();
+        // Use Mockito to mock DealRepository
+        DealRepository mockRepo = mock(DealRepository.class);
+        when(mockRepo.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(mockRepo.findAll()).thenReturn(java.util.Collections.emptyList());
+        service.dealRepository = mockRepo;
+        int dealerIndex = service.getCurrentDealer().ordinal();
+        service.makeBid(new Bid(1, Card.Suit.CLUBS)); // Dealer
+        service.makeBid(new Bid(1, Card.Suit.DIAMONDS)); // Next
+        service.makeBid(Bid.pass()); // Next
+        service.makeBid(Bid.pass()); // Next
+        service.makeBid(Bid.pass()); // Third pass to finish bidding
+        service.saveDealIfFinished();
+        // Debug: print each bid and its player
+        for (int i = 0; i < service.getCurrentDeal().getBids().size(); i++) {
+            Bid bid = service.getCurrentDeal().getBids().get(i);
+            System.out.println("Bid " + i + ": " + bid + ", player="
+                    + (bid.getPlayer() == null ? "null" : bid.getPlayer().toString()));
+        }
+        // Check that each bid in the saved deal has the correct player
+        for (int i = 0; i < service.getCurrentDeal().getBids().size(); i++) {
+            int expectedPlayerIndex = (dealerIndex + i) % 4;
+            assertEquals(expectedPlayerIndex, service.getCurrentDeal().getBids().get(i).getPlayer().ordinal(),
+                    "Bid " + i + " should be assigned to player " + expectedPlayerIndex);
         }
     }
 }
