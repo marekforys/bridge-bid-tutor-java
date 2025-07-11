@@ -240,10 +240,10 @@
                         </thead>
                         <tbody>
                             <tr th:each="round : ${biddingRounds}">
-                                <td th:text="${round[0]}"></td>
-                                <td th:text="${round[1]}"></td>
-                                <td th:text="${round[2]}"></td>
-                                <td th:text="${round[3]}"></td>
+                                <td th:utext="${round[0]}"></td>
+                                <td th:utext="${round[1]}"></td>
+                                <td th:utext="${round[2]}"></td>
+                                <td th:utext="${round[3]}"></td>
                             </tr>
                         </tbody>
                     </table>

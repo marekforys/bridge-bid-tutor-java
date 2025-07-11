@@ -50,7 +50,36 @@ public class BridgeBiddingController {
             String[] round = new String[4];
             for (int j = 0; j < 4; j++) {
                 int idx = i + j;
-                round[j] = (idx < biddingHistory.size()) ? biddingHistory.get(idx).toString() : "-";
+                if (idx < biddingHistory.size()) {
+                    Bid bid = biddingHistory.get(idx);
+                    if (bid.isPass()) {
+                        round[j] = "Pass";
+                    } else {
+                        String suitIcon;
+                        switch (bid.getSuit()) {
+                            case SPADES:
+                                suitIcon = "<span style='color:black'>&#9824;</span>";
+                                break;
+                            case HEARTS:
+                                suitIcon = "<span style='color:red'>&#9829;</span>";
+                                break;
+                            case DIAMONDS:
+                                suitIcon = "<span style='color:red'>&#9830;</span>";
+                                break;
+                            case CLUBS:
+                                suitIcon = "<span style='color:black'>&#9827;</span>";
+                                break;
+                            case NOTRUMP:
+                                suitIcon = "NT";
+                                break;
+                            default:
+                                suitIcon = "";
+                        }
+                        round[j] = bid.getLevel() + " " + suitIcon;
+                    }
+                } else {
+                    round[j] = "-";
+                }
             }
             biddingRounds.add(round);
         }
