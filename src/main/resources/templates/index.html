@@ -149,6 +149,17 @@
             <div class="left-panel">
                 <h2>Bidding</h2>
                 <div style="margin-bottom: 18px;">
+                    <form id="trainingModeForm" th:action="@{/}" method="get" style="display:inline; margin-bottom:10px;">
+                        <label for="trainingMode" style="font-weight:bold;">Training Mode:</label>
+                        <select id="trainingMode" name="trainingMode" style="margin-left:10px;"
+                            onchange="document.getElementById('trainingModeForm').submit();">
+                            <option value="single" th:selected="${trainingMode == 'single'}">Single hand</option>
+                            <option value="pair" th:selected="${trainingMode == 'pair'}">Pair</option>
+                            <option value="all" th:selected="${trainingMode == 'all'}">All hands</option>
+                        </select>
+                    </form>
+                    </div>
+                    <div style="margin-bottom: 18px;">
                     <form id="biddingSystemForm" th:action="@{/}" method="get" style="display:inline;">
                         <label for="biddingSystem" style="font-weight:bold;">Bidding System:</label>
                         <select id="biddingSystem" name="biddingSystem" style="margin-left:10px;"

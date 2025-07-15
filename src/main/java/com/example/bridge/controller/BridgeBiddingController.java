@@ -17,10 +17,16 @@ public class BridgeBiddingController {
     private BridgeBiddingService biddingService;
 
     @GetMapping("/")
-    public String index(@RequestParam(value = "biddingSystem", required = false) String biddingSystem, Model model) {
+    public String index(@RequestParam(value = "biddingSystem", required = false) String biddingSystem,
+            @RequestParam(value = "trainingMode", required = false) String trainingMode,
+            Model model) {
         if (biddingSystem != null) {
             biddingService.setBiddingSystem(biddingSystem);
         }
+        if (trainingMode == null) {
+            trainingMode = "single";
+        }
+        model.addAttribute("trainingMode", trainingMode);
         Deal deal = biddingService.getCurrentDeal();
         if (deal == null) {
             deal = biddingService.startNewDeal();
@@ -147,7 +153,7 @@ public class BridgeBiddingController {
         }
         if (biddingService.isBiddingFinished()) {
             model.addAttribute("bidError", "Bidding is finished.");
-            return index(null, model);
+            return index(null, null, model);
         }
         Bid bid;
         if (pass != null) {
@@ -159,7 +165,7 @@ public class BridgeBiddingController {
         }
         if (!biddingService.isBidAllowed(bid)) {
             model.addAttribute("bidError", "Bid must be higher than previous bids.");
-            return index(null, model);
+            return index(null, null, model);
         }
         biddingService.makeBid(bid);
         biddingService.saveDealIfFinished();
