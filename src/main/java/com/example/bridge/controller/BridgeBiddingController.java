@@ -133,6 +133,45 @@ public class BridgeBiddingController {
             com.example.bridge.model.Card.Suit.DIAMONDS,
             com.example.bridge.model.Card.Suit.CLUBS
         ));
+        // Pick hands to display based on trainingMode
+        List<Hand> displayHands = new ArrayList<>();
+        if ("all".equals(trainingMode)) {
+            displayHands.addAll(hands);
+        } else if ("pair".equals(trainingMode)) {
+            displayHands.add(hand);
+            // Partner: (currentBidderIndex + 2) % 4
+            displayHands.add(hands.get((currentBidderIndex + 2) % 4));
+        } else { // single
+            displayHands.add(hand);
+        }
+        // Calculate total points for each display hand
+        List<Integer> displayHandPoints = new ArrayList<>();
+        for (Hand h : displayHands) {
+            int points = 0;
+            if (h.getCards() != null) {
+                for (Card card : h.getCards()) {
+                    switch (card.getRank()) {
+                        case ACE:
+                            points += 4;
+                            break;
+                        case KING:
+                            points += 3;
+                            break;
+                        case QUEEN:
+                            points += 2;
+                            break;
+                        case JACK:
+                            points += 1;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            displayHandPoints.add(points);
+        }
+        model.addAttribute("displayHandPoints", displayHandPoints);
+        model.addAttribute("displayHands", displayHands);
         return "index";
     }
 
