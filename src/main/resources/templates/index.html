@@ -148,6 +148,9 @@
         <div class="main-flex" style="justify-content:space-between;">
             <div class="left-panel">
                 <h2>Bidding</h2>
+                <div style="margin-bottom: 18px; font-weight:bold; color:#fff;">
+                    You are playing: <span th:text="${userSeat.shortName}"></span>
+                </div>
                 <div style="margin-bottom: 18px;">
                     <form id="trainingModeForm" th:action="@{/}" method="get" style="display:inline; margin-bottom:10px;">
                         <label for="trainingMode" style="font-weight:bold;">Training Mode:</label>
@@ -179,6 +182,7 @@
                         finished.</div>
                     <form th:if="${!biddingFinished}" th:action="@{/make-bid}" method="post">
                         <input type="hidden" name="biddingSystem" th:value="${biddingSystem}" />
+                        <input type="hidden" name="trainingMode" th:value="${trainingMode}" />
                         <label>Level:
                             <select name="level">
                                 <option th:each="i : ${#numbers.sequence(1,7)}" th:value="${i}" th:text="${i}"></option>
@@ -207,6 +211,7 @@
             <div class="center-panel">
                 <div style="text-align:center; margin-bottom:10px;">
                     <form th:action="@{/new-deal}" method="post" style="display:inline; margin-right:10px;">
+                        <input type="hidden" name="trainingMode" th:value="${trainingMode}" />
                         <button type="submit">Start New Deal</button>
                     </form>
                     <button onclick="window.open('/current-deal-popup', 'CurrentDealPopup', 'width=600,height=600,scrollbars=yes')">Show

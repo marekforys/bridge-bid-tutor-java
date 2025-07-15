@@ -30,6 +30,13 @@ public class BridgeBiddingController {
         Deal deal = biddingService.getCurrentDeal();
         if (deal == null) {
             deal = biddingService.startNewDeal();
+            // --- AUTO BIDDING LOGIC FOR SINGLE HAND MODE ON FIRST DEAL ---
+            if ("single".equals(trainingMode)) {
+                int userSeatIndex = biddingService.getUserSeat().ordinal();
+                while (!biddingService.isBiddingFinished() && biddingService.getCurrentBidderIndex() != userSeatIndex) {
+                    biddingService.makeBid(Bid.pass());
+                }
+            }
         }
         // Debug: print number of cards in each hand
         int handIdx = 0;
@@ -42,6 +49,9 @@ public class BridgeBiddingController {
         // Set the dealer for the current deal (cycling N, E, S, W)
         Player dealer = biddingService.getCurrentDealer();
         model.addAttribute("dealer", dealer.toString().substring(0, 1));
+        // Get user seat
+        Player userSeat = biddingService.getUserSeat();
+        model.addAttribute("userSeat", userSeat);
         // Pick the current bidder's hand for the main screen
         int currentBidderIndex = biddingService.getCurrentBidderIndex();
         List<Hand> hands = deal.getHands();
@@ -142,7 +152,9 @@ public class BridgeBiddingController {
             // Partner: (currentBidderIndex + 2) % 4
             displayHands.add(hands.get((currentBidderIndex + 2) % 4));
         } else { // single
-            displayHands.add(hand);
+            // Show the user's hand
+            int userSeatIndex = userSeat.ordinal();
+            displayHands.add(hands.get(userSeatIndex));
         }
         // Calculate total points for each display hand
         List<Integer> displayHandPoints = new ArrayList<>();
@@ -176,8 +188,18 @@ public class BridgeBiddingController {
     }
 
     @PostMapping("/new-deal")
-    public String newDeal() {
+    public String newDeal(@RequestParam(value = "trainingMode", required = false) String trainingMode) {
+        if (trainingMode == null || trainingMode.isEmpty()) {
+            trainingMode = "single";
+        }
         biddingService.startNewDeal();
+        // --- AUTO BIDDING LOGIC FOR SINGLE HAND MODE ON NEW DEAL ---
+        if ("single".equals(trainingMode)) {
+            int userSeatIndex = biddingService.getUserSeat().ordinal();
+            while (!biddingService.isBiddingFinished() && biddingService.getCurrentBidderIndex() != userSeatIndex) {
+                biddingService.makeBid(Bid.pass()); // App always passes for now
+            }
+        }
         return "redirect:/";
     }
 
@@ -186,6 +208,7 @@ public class BridgeBiddingController {
             @RequestParam(required = false) Card.Suit suit,
             @RequestParam(required = false) String pass,
             @RequestParam(value = "biddingSystem", required = false) String biddingSystem,
+            @RequestParam(value = "trainingMode", required = false) String trainingMode,
                     Model model) {
         if (biddingSystem != null) {
             biddingService.setBiddingSystem(biddingSystem);
@@ -207,6 +230,14 @@ public class BridgeBiddingController {
             return index(null, null, model);
         }
         biddingService.makeBid(bid);
+        // --- AUTO BIDDING LOGIC FOR SINGLE HAND MODE ---
+        if ("single".equals(trainingMode)) {
+            // User seat is random per deal
+            int userSeatIndex = biddingService.getUserSeat().ordinal();
+            while (!biddingService.isBiddingFinished() && biddingService.getCurrentBidderIndex() != userSeatIndex) {
+                biddingService.makeBid(Bid.pass()); // App always passes for now
+            }
+        }
         biddingService.saveDealIfFinished();
         return "redirect:/";
     }

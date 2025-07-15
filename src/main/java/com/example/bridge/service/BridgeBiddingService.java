@@ -16,6 +16,7 @@ public class BridgeBiddingService {
     private int currentBidderIndex = 0;
     private String biddingSystem = "natural";
     private int dealNumber = 0;
+    private Player userSeat;
 
     public Deal startNewDeal() {
         // Stub: generate random hands
@@ -47,6 +48,8 @@ public class BridgeBiddingService {
         dealNumber++;
         int dealerIndex = ((dealNumber - 1) % 4 + 4) % 4;
         currentBidderIndex = dealerIndex;
+        // Randomly assign user seat
+        userSeat = Player.values()[new Random().nextInt(4)];
         return currentDeal;
     }
 
@@ -120,5 +123,9 @@ public class BridgeBiddingService {
 
     public Player getCurrentDealer() {
         return Player.values()[((dealNumber - 1) % 4 + 4) % 4];
+    }
+
+    public Player getUserSeat() {
+        return userSeat;
     }
 }
