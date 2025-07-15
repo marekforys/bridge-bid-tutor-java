@@ -9,6 +9,7 @@ import java.util.*;
 
 @Service
 public class BridgeBiddingService {
+    @Autowired
     DealRepository dealRepository;
     private Deal currentDeal;
     private List<Bid> biddingHistory = new ArrayList<>();
