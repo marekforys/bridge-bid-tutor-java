@@ -61,6 +61,8 @@ public class Bid implements Comparable<Bid> {
     }
 
     public int compareTo(Bid other) {
+        if (this.isPass && other.isPass)
+            return 0;
         if (this.isPass)
             return -1;
         if (other.isPass)

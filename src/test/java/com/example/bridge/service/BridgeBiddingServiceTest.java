@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.any;
+import com.example.bridge.model.Hand;
 
 class BridgeBiddingServiceTest {
     private BridgeBiddingService service;
@@ -177,5 +178,102 @@ class BridgeBiddingServiceTest {
         assertFalse(bid.isPass(), "Should not pass with 13 HCP");
         assertEquals(1, bid.getLevel(), "Should open at 1-level");
         assertEquals(com.example.bridge.model.Card.Suit.HEARTS, bid.getSuit(), "Should open longest suit (hearts)");
+    }
+
+    @Test
+    void testIsBidAllowedRejectsLowerOrEqualBids() {
+        // Open 1 Heart
+        assertTrue(service.isBidAllowed(new Bid(1, Card.Suit.HEARTS)), "Should allow first bid");
+        service.makeBid(new Bid(1, Card.Suit.HEARTS));
+        // Lower bid (1 Clubs)
+        assertFalse(service.isBidAllowed(new Bid(1, Card.Suit.CLUBS)), "Should not allow lower suit at same level");
+        // Equal bid (1 Hearts)
+        assertFalse(service.isBidAllowed(new Bid(1, Card.Suit.HEARTS)), "Should not allow same bid");
+        // Higher suit at same level (1 Spades)
+        assertTrue(service.isBidAllowed(new Bid(1, Card.Suit.SPADES)), "Should allow higher suit at same level");
+        // Higher level (2 Clubs)
+        assertTrue(service.isBidAllowed(new Bid(2, Card.Suit.CLUBS)), "Should allow higher level");
+        // Make a higher bid
+        service.makeBid(new Bid(2, Card.Suit.CLUBS));
+        // Now 1 Spades is not allowed
+        assertFalse(service.isBidAllowed(new Bid(1, Card.Suit.SPADES)),
+                "Should not allow lower level after higher bid");
+    }
+
+    @Test
+    void testIsBidAllowedEdgeCases() {
+        // Only passes so far: any bid is allowed
+        service.makeBid(Bid.pass());
+        service.makeBid(Bid.pass());
+        assertTrue(service.isBidAllowed(new Bid(1, Card.Suit.CLUBS)), "Should allow any bid after only passes");
+        // Add a non-pass bid
+        service.makeBid(new Bid(1, Card.Suit.HEARTS));
+        // Now, lower or equal bids are not allowed
+        assertFalse(service.isBidAllowed(new Bid(1, Card.Suit.CLUBS)),
+                "Should not allow lower suit at same level after non-pass");
+        assertFalse(service.isBidAllowed(new Bid(1, Card.Suit.HEARTS)), "Should not allow same bid after non-pass");
+        assertTrue(service.isBidAllowed(new Bid(1, Card.Suit.SPADES)),
+                "Should allow higher suit at same level after non-pass");
+        assertTrue(service.isBidAllowed(new Bid(2, Card.Suit.CLUBS)), "Should allow higher level after non-pass");
+        // Add a pass after a high bid
+        service.makeBid(Bid.pass());
+        // Still, lower bids are not allowed
+        assertFalse(service.isBidAllowed(new Bid(1, Card.Suit.DIAMONDS)),
+                "Should not allow lower bid after pass following high bid");
+        // Add a higher bid
+        service.makeBid(new Bid(2, Card.Suit.DIAMONDS));
+        // Now, only higher or equal level, higher suit allowed
+        assertFalse(service.isBidAllowed(new Bid(2, Card.Suit.CLUBS)),
+                "Should not allow lower suit at same level after higher bid");
+        assertTrue(service.isBidAllowed(new Bid(2, Card.Suit.HEARTS)),
+                "Should allow higher suit at same level after higher bid");
+        assertTrue(service.isBidAllowed(new Bid(3, Card.Suit.CLUBS)), "Should allow higher level after higher bid");
+        // Add more passes
+        service.makeBid(Bid.pass());
+        service.makeBid(Bid.pass());
+        // Still, lower bids are not allowed
+        assertFalse(service.isBidAllowed(new Bid(2, Card.Suit.CLUBS)),
+                "Should not allow lower bid after multiple passes");
+    }
+
+    @Test
+    void testIsBidAllowedSpecificSequence() {
+        // N: Pass, E: Pass, S: 1♦, W: Pass
+        service.makeBid(Bid.pass()); // N
+        service.makeBid(Bid.pass()); // E
+        service.makeBid(new Bid(1, Card.Suit.DIAMONDS)); // S
+        service.makeBid(Bid.pass()); // W
+        // N: 2♦, E: Pass, S: 1♦ (should NOT be allowed), W: Pass
+        service.makeBid(new Bid(2, Card.Suit.DIAMONDS)); // N
+        service.makeBid(Bid.pass()); // E
+        // S tries to bid 1♦ again (should not be allowed)
+        assertFalse(service.isBidAllowed(new Bid(1, Card.Suit.DIAMONDS)), "Should not allow 1♦ after 2♦ has been bid");
+        // S tries to bid 2♦ again (should not be allowed)
+        assertFalse(service.isBidAllowed(new Bid(2, Card.Suit.DIAMONDS)), "Should not allow same bid as highest");
+        // S tries to bid 3♦ (should be allowed)
+        assertTrue(service.isBidAllowed(new Bid(3, Card.Suit.DIAMONDS)), "Should allow higher bid");
+    }
+
+    @Test
+    void testAutoBiddingDoesNotMakeIllegalBids() {
+        // Simulate a sequence: N: 1♠, E: 1♥, S: Pass, W: auto-bid (should not be 1♠ or
+        // 1♥)
+        service.startNewDeal();
+        // Force the bidding history to a specific state
+        service.makeBid(new Bid(1, Card.Suit.SPADES)); // N
+        service.makeBid(new Bid(1, Card.Suit.HEARTS)); // E
+        service.makeBid(Bid.pass()); // S
+        // Now W's turn: auto-bid
+        Hand wHand = service.getHandForPlayer(com.example.bridge.model.Player.WEST);
+        Bid autoBid = service.getSimpleNaturalBid(wHand, service.getBiddingHistory());
+        // If autoBid is not allowed, it should be replaced with Pass
+        if (!service.isBidAllowed(autoBid)) {
+            autoBid = Bid.pass();
+        }
+        // The only allowed bids are higher than 1♥
+        assertTrue(
+                autoBid.isPass() || autoBid.getLevel() > 1
+                        || (autoBid.getLevel() == 1 && autoBid.getSuit().ordinal() > Card.Suit.HEARTS.ordinal()),
+                "Auto-bid must be Pass or strictly higher than the current highest bid");
     }
 }

@@ -127,6 +127,7 @@
             document.getElementById('selectedSuit').value = value;
             document.getElementById('dropdown-selected').innerHTML = iconHtml;
             document.getElementById('dropdown-items').style.display = 'none';
+            updateBidButtonState();
         }
         function toggleDropdown() {
             var items = document.getElementById('dropdown-items');
@@ -139,6 +140,45 @@
                 dropdown.style.display = 'none';
             }
         });
+            // --- Client-side validation for bid form ---
+            function updateBidButtonState() {
+                var highestLevel = /*[[${highestBidLevel}]]*/ null;
+                var highestSuit = '/*[[${highestBidSuit}]]*/';
+                var levelSelect = document.querySelector('select[name="level"]');
+                var suitInput = document.getElementById('selectedSuit');
+                var bidButton = document.querySelector('form button[type="submit"]:not([name="pass"])');
+                var selectedLevel = parseInt(levelSelect.value);
+                var selectedSuit = suitInput.value;
+                var suitOrder = ['CLUBS', 'DIAMONDS', 'HEARTS', 'SPADES', 'NOTRUMP'];
+                var isLegal = true;
+                if (highestLevel !== null && highestSuit !== null) {
+                    if (selectedLevel < highestLevel) {
+                        isLegal = false;
+                    } else if (selectedLevel === highestLevel) {
+                        if (suitOrder.indexOf(selectedSuit) <= suitOrder.indexOf(highestSuit)) {
+                            isLegal = false;
+                        }
+                    }
+                }
+                bidButton.disabled = !isLegal;
+            }
+            document.addEventListener('DOMContentLoaded', function () {
+                var levelSelect = document.querySelector('select[name="level"]');
+                var suitInput = document.getElementById('selectedSuit');
+                if (levelSelect && suitInput) {
+                    levelSelect.addEventListener('change', updateBidButtonState);
+                    suitInput.addEventListener('change', updateBidButtonState);
+                    updateBidButtonState();
+                }
+            });
+            // --- Show error message without reload ---
+            function showBidError(msg) {
+                var errorDiv = document.getElementById('bidErrorDiv');
+                if (errorDiv) {
+                    errorDiv.innerText = msg;
+                    errorDiv.style.display = 'block';
+                }
+            }
     </script>
 </head>
 
@@ -176,11 +216,12 @@
                 <div class="bidding-section">
                     <div style="font-weight:bold; margin-bottom:10px;">Current Bidder: <span th:text="${currentBidder}"></span>
                     </div>
-                    <div th:if="${bidError}" style="color:red; font-weight:bold; margin-bottom:10px;" th:text="${bidError}">
-                    </div>
+                    <div id="bidErrorDiv" th:if="${bidError}" style="color:red; font-weight:bold; margin-bottom:10px; display:block;"
+                        th:text="${bidError}"></div>
                     <div th:if="${biddingFinished}" style="color:green; font-weight:bold; margin-bottom:10px;">Bidding is
                         finished.</div>
-                    <form th:if="${!biddingFinished}" th:action="@{/make-bid}" method="post">
+                    <form th:if="${!biddingFinished}" th:action="@{/make-bid}" method="post"
+                        onsubmit="if(document.querySelector('form button[type=submit]:not([name=pass])').disabled){showBidError('Bid must be higher than previous bids.');return false;}else{return true;}">
                         <input type="hidden" name="biddingSystem" th:value="${biddingSystem}" />
                         <input type="hidden" name="trainingMode" th:value="${trainingMode}" />
                         <label>Level:

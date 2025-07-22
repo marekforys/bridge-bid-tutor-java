@@ -187,6 +187,20 @@ public class BridgeBiddingController {
         }
         model.addAttribute("displayHandPoints", displayHandPoints);
         model.addAttribute("displayHands", displayHands);
+        // Find highest non-pass bid for client-side validation
+        Bid highestBid = null;
+        for (Bid b : biddingService.getBiddingHistory()) {
+            if (!b.isPass() && (highestBid == null || b.compareTo(highestBid) > 0)) {
+                highestBid = b;
+            }
+        }
+        if (highestBid != null) {
+            model.addAttribute("highestBidLevel", highestBid.getLevel());
+            model.addAttribute("highestBidSuit", highestBid.getSuit() != null ? highestBid.getSuit().name() : null);
+        } else {
+            model.addAttribute("highestBidLevel", null);
+            model.addAttribute("highestBidSuit", null);
+        }
         return "index";
     }
 
@@ -243,6 +257,9 @@ public class BridgeBiddingController {
                 Player currentBidder = Player.values()[biddingService.getCurrentBidderIndex()];
                 Hand autoHand = biddingService.getHandForPlayer(currentBidder);
                 Bid autoBid = biddingService.getSimpleNaturalBid(autoHand, biddingService.getBiddingHistory());
+                if (!biddingService.isBidAllowed(autoBid)) {
+                    autoBid = Bid.pass();
+                }
                 biddingService.makeBid(autoBid);
             }
         }
