@@ -165,13 +165,14 @@ public class BridgeBiddingService {
         }
         if (hcp < 12)
             return Bid.pass();
-        // Find longest suit
+        // Find longest suit, break ties by standard order: SPADES > HEARTS > DIAMONDS >
+        // CLUBS
         Map<Card.Suit, List<Card>> bySuit = hand.getCardsBySuit();
         Card.Suit longest = null;
         int max = 0;
         for (Card.Suit suit : List.of(Card.Suit.SPADES, Card.Suit.HEARTS, Card.Suit.DIAMONDS, Card.Suit.CLUBS)) {
             int count = bySuit.getOrDefault(suit, List.of()).size();
-            if (count > max) {
+            if (count > max || (count == max && longest == null)) {
                 max = count;
                 longest = suit;
             }

@@ -115,4 +115,67 @@ class BridgeBiddingServiceTest {
                     "Bid " + i + " should be assigned to player " + expectedPlayerIndex);
         }
     }
+
+    @Test
+    void testGetHandForPlayerReturnsCorrectHand() {
+        service.startNewDeal();
+        for (int i = 0; i < 4; i++) {
+            var player = com.example.bridge.model.Player.values()[i];
+            var hand = service.getHandForPlayer(player);
+            assertNotNull(hand, "Hand should not be null for player " + player);
+            assertEquals(player, hand.getPlayer(), "Hand player should match");
+        }
+    }
+
+    @Test
+    void testSimpleNaturalBidPassesWithLowPoints() {
+        // Create a hand with <12 HCP
+        var cards = new java.util.ArrayList<com.example.bridge.model.Card>();
+        for (int i = 0; i < 13; i++) {
+            cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.CLUBS,
+                    com.example.bridge.model.Card.Rank.TWO));
+        }
+        var hand = new com.example.bridge.model.Hand(cards);
+        var bid = service.getSimpleNaturalBid(hand, java.util.List.of());
+        assertTrue(bid.isPass(), "Should pass with <12 HCP");
+    }
+
+    @Test
+    void testSimpleNaturalBidOpensLongestSuit() {
+        // 13 HCP, longest suit is SPADES
+        var cards = new java.util.ArrayList<com.example.bridge.model.Card>();
+        // 5 spades (no points)
+        for (int i = 0; i < 5; i++) {
+            cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.SPADES,
+                    com.example.bridge.model.Card.Rank.TWO));
+        }
+        // 4 hearts (no points)
+        for (int i = 0; i < 4; i++) {
+            cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.HEARTS,
+                    com.example.bridge.model.Card.Rank.THREE));
+        }
+        // 2 diamonds (no points)
+        for (int i = 0; i < 2; i++) {
+            cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.DIAMONDS,
+                    com.example.bridge.model.Card.Rank.FOUR));
+        }
+        // 2 clubs: Ace, King (7 HCP)
+        cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.CLUBS,
+                com.example.bridge.model.Card.Rank.ACE)); // 4
+        cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.CLUBS,
+                com.example.bridge.model.Card.Rank.KING)); // 3
+        // Add 3 more HCP: Queen, Jack, King of hearts
+        cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.HEARTS,
+                com.example.bridge.model.Card.Rank.QUEEN)); // 2
+        cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.HEARTS,
+                com.example.bridge.model.Card.Rank.JACK)); // 1
+        cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.HEARTS,
+                com.example.bridge.model.Card.Rank.KING)); // 3
+        // Total HCP: 4+3+2+1+3=13
+        var hand = new com.example.bridge.model.Hand(cards);
+        var bid = service.getSimpleNaturalBid(hand, java.util.List.of());
+        assertFalse(bid.isPass(), "Should not pass with 13 HCP");
+        assertEquals(1, bid.getLevel(), "Should open at 1-level");
+        assertEquals(com.example.bridge.model.Card.Suit.HEARTS, bid.getSuit(), "Should open longest suit (hearts)");
+    }
 }
