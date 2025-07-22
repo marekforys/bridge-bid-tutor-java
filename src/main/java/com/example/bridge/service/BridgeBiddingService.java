@@ -163,6 +163,51 @@ public class BridgeBiddingService {
                     break;
             }
         }
+        // --- RESPONSE LOGIC ---
+        Player me = hand.getPlayer();
+        Player partner = me.getPartner();
+        // Find partner's last non-pass bid
+        Bid partnerLastBid = null;
+        for (int i = history.size() - 1; i >= 0; i--) {
+            Bid b = history.get(i);
+            if (!b.isPass() && b.getPlayer() == partner) {
+                partnerLastBid = b;
+                break;
+            }
+        }
+        // Check if this is the first bid by this player
+        boolean hasBid = false;
+        for (Bid b : history) {
+            if (!b.isPass() && b.getPlayer() == me) {
+                hasBid = true;
+                break;
+            }
+        }
+        if (partnerLastBid != null && !hasBid) {
+            // Basic natural responses
+            if (hcp >= 6 && hcp <= 9) {
+                Bid resp = new Bid(1, Card.Suit.NOTRUMP);
+                if (isBidAllowed(resp))
+                    return resp;
+            }
+            if (hcp >= 10 && hcp <= 12) {
+                Bid resp = new Bid(2, Card.Suit.NOTRUMP);
+                if (isBidAllowed(resp))
+                    return resp;
+            }
+            // Raise partner's suit with 4+ cards and 6+ HCP
+            if (hcp >= 6 && partnerLastBid.getSuit() != null) {
+                final Card.Suit partnerSuit = partnerLastBid.getSuit();
+                int count = (int) hand.getCards().stream().filter(c -> c.getSuit() == partnerSuit).count();
+                if (count >= 4) {
+                    Bid resp = new Bid(partnerLastBid.getLevel() + 1, partnerSuit);
+                    if (isBidAllowed(resp))
+                        return resp;
+                }
+            }
+            return Bid.pass();
+        }
+        // --- END RESPONSE LOGIC ---
         if (hcp < 12)
             return Bid.pass();
         // Find longest suit, break ties by standard order: SPADES > HEARTS > DIAMONDS >

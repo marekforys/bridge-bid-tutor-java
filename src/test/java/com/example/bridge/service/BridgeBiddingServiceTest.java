@@ -276,4 +276,116 @@ class BridgeBiddingServiceTest {
                         || (autoBid.getLevel() == 1 && autoBid.getSuit().ordinal() > Card.Suit.HEARTS.ordinal()),
                 "Auto-bid must be Pass or strictly higher than the current highest bid");
     }
+
+    @Test
+    void testResponse1NTWith6to9HCP() {
+        // Partner opens 1C, responder has 7 HCP, no fit
+        var cards = new java.util.ArrayList<com.example.bridge.model.Card>();
+        // 7 HCP: K, Q, J, rest low
+        cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.HEARTS,
+                com.example.bridge.model.Card.Rank.KING)); // 3
+        cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.SPADES,
+                com.example.bridge.model.Card.Rank.QUEEN)); // 2
+        cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.DIAMONDS,
+                com.example.bridge.model.Card.Rank.JACK)); // 1
+        for (int i = 0; i < 10; i++) {
+            cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.CLUBS,
+                    com.example.bridge.model.Card.Rank.TWO));
+        }
+        var hand = new com.example.bridge.model.Hand(cards);
+        hand.setPlayer(com.example.bridge.model.Player.SOUTH);
+        // Bidding: N: 1C
+        var history = new java.util.ArrayList<com.example.bridge.model.Bid>();
+        var openBid = new com.example.bridge.model.Bid(1, com.example.bridge.model.Card.Suit.CLUBS);
+        openBid.setPlayer(com.example.bridge.model.Player.NORTH);
+        history.add(openBid);
+        var bid = service.getSimpleNaturalBid(hand, history);
+        assertFalse(bid.isPass(), "Should not pass with 7 HCP");
+        assertEquals(1, bid.getLevel(), "Should respond at 1-level");
+        assertEquals(com.example.bridge.model.Card.Suit.NOTRUMP, bid.getSuit(), "Should respond 1NT");
+    }
+
+    @Test
+    void testResponse2NTWith10to12HCP() {
+        // Partner opens 1C, responder has 11 HCP, no fit
+        var cards = new java.util.ArrayList<com.example.bridge.model.Card>();
+        // 11 HCP: A, K, Q, rest low
+        cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.HEARTS,
+                com.example.bridge.model.Card.Rank.ACE)); // 4
+        cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.SPADES,
+                com.example.bridge.model.Card.Rank.KING)); // 3
+        cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.DIAMONDS,
+                com.example.bridge.model.Card.Rank.QUEEN)); // 2
+        cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.CLUBS,
+                com.example.bridge.model.Card.Rank.JACK)); // 1
+        for (int i = 0; i < 9; i++) {
+            cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.CLUBS,
+                    com.example.bridge.model.Card.Rank.TWO));
+        }
+        var hand = new com.example.bridge.model.Hand(cards);
+        hand.setPlayer(com.example.bridge.model.Player.SOUTH);
+        // Bidding: N: 1C
+        var history = new java.util.ArrayList<com.example.bridge.model.Bid>();
+        var openBid = new com.example.bridge.model.Bid(1, com.example.bridge.model.Card.Suit.CLUBS);
+        openBid.setPlayer(com.example.bridge.model.Player.NORTH);
+        history.add(openBid);
+        var bid = service.getSimpleNaturalBid(hand, history);
+        assertFalse(bid.isPass(), "Should not pass with 11 HCP");
+        assertEquals(2, bid.getLevel(), "Should respond at 2-level");
+        assertEquals(com.example.bridge.model.Card.Suit.NOTRUMP, bid.getSuit(), "Should respond 2NT");
+    }
+
+    @Test
+    void testResponseRaiseWithFit() {
+        // Partner opens 1H, responder has 8 HCP and 5 hearts
+        var cards = new java.util.ArrayList<com.example.bridge.model.Card>();
+        // 8 HCP: K, Q, rest low
+        cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.HEARTS,
+                com.example.bridge.model.Card.Rank.KING)); // 3
+        cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.HEARTS,
+                com.example.bridge.model.Card.Rank.QUEEN)); // 2
+        for (int i = 0; i < 3; i++) {
+            cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.HEARTS,
+                    com.example.bridge.model.Card.Rank.TWO));
+        }
+        for (int i = 0; i < 8; i++) {
+            cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.CLUBS,
+                    com.example.bridge.model.Card.Rank.TWO));
+        }
+        var hand = new com.example.bridge.model.Hand(cards);
+        hand.setPlayer(com.example.bridge.model.Player.SOUTH);
+        // Bidding: N: 1H
+        var history = new java.util.ArrayList<com.example.bridge.model.Bid>();
+        var openBid = new com.example.bridge.model.Bid(1, com.example.bridge.model.Card.Suit.HEARTS);
+        openBid.setPlayer(com.example.bridge.model.Player.NORTH);
+        history.add(openBid);
+        var bid = service.getSimpleNaturalBid(hand, history);
+        assertFalse(bid.isPass(), "Should not pass with 8 HCP and fit");
+        assertEquals(2, bid.getLevel(), "Should raise to 2-level");
+        assertEquals(com.example.bridge.model.Card.Suit.HEARTS, bid.getSuit(), "Should raise partner's suit");
+    }
+
+    @Test
+    void testResponsePassWithNoPointsOrFit() {
+        // Partner opens 1S, responder has 4 HCP, no fit
+        var cards = new java.util.ArrayList<com.example.bridge.model.Card>();
+        // 4 HCP: Q, rest low
+        cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.HEARTS,
+                com.example.bridge.model.Card.Rank.QUEEN)); // 2
+        cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.SPADES,
+                com.example.bridge.model.Card.Rank.JACK)); // 1
+        for (int i = 0; i < 11; i++) {
+            cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.CLUBS,
+                    com.example.bridge.model.Card.Rank.TWO));
+        }
+        var hand = new com.example.bridge.model.Hand(cards);
+        hand.setPlayer(com.example.bridge.model.Player.SOUTH);
+        // Bidding: N: 1S
+        var history = new java.util.ArrayList<com.example.bridge.model.Bid>();
+        var openBid = new com.example.bridge.model.Bid(1, com.example.bridge.model.Card.Suit.SPADES);
+        openBid.setPlayer(com.example.bridge.model.Player.NORTH);
+        history.add(openBid);
+        var bid = service.getSimpleNaturalBid(hand, history);
+        assertTrue(bid.isPass(), "Should pass with 4 HCP and no fit");
+    }
 }
