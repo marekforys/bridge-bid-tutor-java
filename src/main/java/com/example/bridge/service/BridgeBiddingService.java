@@ -128,4 +128,57 @@ public class BridgeBiddingService {
     public Player getUserSeat() {
         return userSeat;
     }
+
+    // Get the Hand for a given Player from the current deal
+    public Hand getHandForPlayer(Player player) {
+        if (currentDeal == null)
+            return null;
+        for (Hand hand : currentDeal.getHands()) {
+            if (hand.getPlayer() == player)
+                return hand;
+        }
+        return null;
+    }
+
+    // Simple natural system: open 1 of the longest suit if 12+ HCP, else Pass
+    public Bid getSimpleNaturalBid(Hand hand, List<Bid> history) {
+        if (hand == null)
+            return Bid.pass();
+        int hcp = 0;
+        for (Card card : hand.getCards()) {
+            switch (card.getRank()) {
+                case ACE:
+                    hcp += 4;
+                    break;
+                case KING:
+                    hcp += 3;
+                    break;
+                case QUEEN:
+                    hcp += 2;
+                    break;
+                case JACK:
+                    hcp += 1;
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (hcp < 12)
+            return Bid.pass();
+        // Find longest suit
+        Map<Card.Suit, List<Card>> bySuit = hand.getCardsBySuit();
+        Card.Suit longest = null;
+        int max = 0;
+        for (Card.Suit suit : List.of(Card.Suit.SPADES, Card.Suit.HEARTS, Card.Suit.DIAMONDS, Card.Suit.CLUBS)) {
+            int count = bySuit.getOrDefault(suit, List.of()).size();
+            if (count > max) {
+                max = count;
+                longest = suit;
+            }
+        }
+        if (longest == null)
+            return Bid.pass();
+        // Only open at 1-level for now
+        return new Bid(1, longest);
+    }
 }

@@ -34,7 +34,10 @@ public class BridgeBiddingController {
             if ("single".equals(trainingMode)) {
                 int userSeatIndex = biddingService.getUserSeat().ordinal();
                 while (!biddingService.isBiddingFinished() && biddingService.getCurrentBidderIndex() != userSeatIndex) {
-                    biddingService.makeBid(Bid.pass());
+                    Player currentBidder = Player.values()[biddingService.getCurrentBidderIndex()];
+                    Hand autoHand = biddingService.getHandForPlayer(currentBidder);
+                    Bid autoBid = biddingService.getSimpleNaturalBid(autoHand, biddingService.getBiddingHistory());
+                    biddingService.makeBid(autoBid);
                 }
             }
         }
@@ -197,7 +200,10 @@ public class BridgeBiddingController {
         if ("single".equals(trainingMode)) {
             int userSeatIndex = biddingService.getUserSeat().ordinal();
             while (!biddingService.isBiddingFinished() && biddingService.getCurrentBidderIndex() != userSeatIndex) {
-                biddingService.makeBid(Bid.pass()); // App always passes for now
+                Player currentBidder = Player.values()[biddingService.getCurrentBidderIndex()];
+                Hand autoHand = biddingService.getHandForPlayer(currentBidder);
+                Bid autoBid = biddingService.getSimpleNaturalBid(autoHand, biddingService.getBiddingHistory());
+                biddingService.makeBid(autoBid);
             }
         }
         return "redirect:/";
@@ -232,10 +238,12 @@ public class BridgeBiddingController {
         biddingService.makeBid(bid);
         // --- AUTO BIDDING LOGIC FOR SINGLE HAND MODE ---
         if ("single".equals(trainingMode)) {
-            // User seat is random per deal
             int userSeatIndex = biddingService.getUserSeat().ordinal();
             while (!biddingService.isBiddingFinished() && biddingService.getCurrentBidderIndex() != userSeatIndex) {
-                biddingService.makeBid(Bid.pass()); // App always passes for now
+                Player currentBidder = Player.values()[biddingService.getCurrentBidderIndex()];
+                Hand autoHand = biddingService.getHandForPlayer(currentBidder);
+                Bid autoBid = biddingService.getSimpleNaturalBid(autoHand, biddingService.getBiddingHistory());
+                biddingService.makeBid(autoBid);
             }
         }
         biddingService.saveDealIfFinished();
