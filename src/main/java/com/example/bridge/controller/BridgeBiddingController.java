@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -90,14 +91,28 @@ public class BridgeBiddingController {
         // Precompute biddingRounds for the template
         List<Bid> biddingHistory = biddingService.getBiddingHistory();
         List<String[]> biddingRounds = new ArrayList<>();
-        for (int i = 0; i < biddingHistory.size(); i += 4) {
-            String[] round = new String[4];
-            for (int j = 0; j < 4; j++) {
-                int idx = i + j;
-                if (idx < biddingHistory.size()) {
-                    Bid bid = biddingHistory.get(idx);
+        
+        // Get dealer index (0=N, 1=E, 2=S, 3=W)
+        int dealerIndex = dealer.ordinal();
+        int numBids = biddingHistory.size();
+        
+        // Calculate how many rounds we need
+        int numRounds = (numBids + 3) / 4; // Round up to nearest 4
+        
+        // Create the bidding rounds
+        for (int round = 0; round < numRounds; round++) {
+            String[] roundBids = new String[4];
+            Arrays.fill(roundBids, "-");
+            
+            // Fill in the bids for this round
+            for (int pos = 0; pos < 4; pos++) {
+                int bidIndex = round * 4 + pos;
+                if (bidIndex < numBids) {
+                    Bid bid = biddingHistory.get(bidIndex);
+                    String bidText;
+                    
                     if (bid.isPass()) {
-                        round[j] = "Pass";
+                        bidText = "Pass";
                     } else {
                         String suitIcon;
                         switch (bid.getSuit()) {
@@ -119,13 +134,16 @@ public class BridgeBiddingController {
                             default:
                                 suitIcon = "";
                         }
-                        round[j] = bid.getLevel() + " " + suitIcon;
+                        bidText = bid.getLevel() + " " + suitIcon;
                     }
-                } else {
-                    round[j] = "-";
+                    
+                    // Calculate which player column this bid should go in
+                    // The first bid goes to the dealer, then clockwise
+                    int playerColumn = (dealerIndex + bidIndex) % 4;
+                    roundBids[playerColumn] = bidText;
                 }
             }
-            biddingRounds.add(round);
+            biddingRounds.add(roundBids);
         }
         model.addAttribute("biddingRounds", biddingRounds);
         // For popup: all hands by suit

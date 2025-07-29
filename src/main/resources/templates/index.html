@@ -326,15 +326,19 @@
                         </thead>
                         <tbody>
                             <tr th:each="round, rowStat : ${biddingRounds}">
+                                <!-- North -->
                                 <td th:class="${currentBidderIndex == 0 && rowStat.last ? 'current-bidder' : ''}" 
                                     th:classappend="${dealer == T(com.example.bridge.model.Player).NORTH} ? 'dealer-col' : ''"
                                     th:utext="${round[0]}"></td>
+                                <!-- East -->
                                 <td th:class="${currentBidderIndex == 1 && rowStat.last ? 'current-bidder' : ''}" 
                                     th:classappend="${dealer == T(com.example.bridge.model.Player).EAST} ? 'dealer-col' : ''"
                                     th:utext="${round[1]}"></td>
+                                <!-- South -->
                                 <td th:class="${currentBidderIndex == 2 && rowStat.last ? 'current-bidder' : ''}" 
                                     th:classappend="${dealer == T(com.example.bridge.model.Player).SOUTH} ? 'dealer-col' : ''"
                                     th:utext="${round[2]}"></td>
+                                <!-- West -->
                                 <td th:class="${currentBidderIndex == 3 && rowStat.last ? 'current-bidder' : ''}" 
                                     th:classappend="${dealer == T(com.example.bridge.model.Player).WEST} ? 'dealer-col' : ''"
                                     th:utext="${round[3]}"></td>
