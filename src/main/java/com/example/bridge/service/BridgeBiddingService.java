@@ -167,6 +167,7 @@ public class BridgeBiddingService {
                 default:
                     break;
             }
+            System.out.println("Card: " + card + " HCP: " + hcp);
         }
         
         // --- RESPONSE LOGIC ---
@@ -212,13 +213,39 @@ public class BridgeBiddingService {
                             .limit(13) // Ensure we don't count more than 13 cards
                             .count();
                             
-                        // With 3+ support and 6+ HCP, raise partner's suit
-                        if (count >= 3 && hcp >= 6) {
-                            int raiseLevel = partnerLastBid.getLevel() + (hcp >= 10 ? 2 : 1);
-                            Bid resp = new Bid(Math.min(raiseLevel, 4), partnerSuit);
-                            if (isBidAllowed(resp)) {
-                                System.out.println("  Raising partner's suit to " + resp);
-                                return resp;
+                        // With 4+ support, raise partner's suit
+                        if (count >= 4) {
+                            // Single raise with 6-9 HCP
+                            if (hcp >= 6 && hcp <= 9) {
+                                int raiseLevel = partnerLastBid.getLevel() + 1;
+                                Bid resp = new Bid(raiseLevel, partnerSuit);
+                                if (isBidAllowed(resp)) {
+                                    System.out.println("  Single raise to " + resp);
+                                    return resp;
+                                }
+                            }
+                            // Double raise with 10-12 HCP
+                            else if (hcp >= 10 && hcp <= 12) {
+                                int raiseLevel = partnerLastBid.getLevel() + 2;
+                                // Don't go beyond game level (4)
+                                if (raiseLevel <= 4) {
+                                    Bid resp = new Bid(raiseLevel, partnerSuit);
+                                    if (isBidAllowed(resp)) {
+                                        System.out.println("  Double raise to " + resp);
+                                        return resp;
+                                    }
+                                }
+                            }
+                            // With 5+ HCP and 4+ card support, make a simple raise
+                            else if (hcp >= 5) {
+                                int raiseLevel = partnerLastBid.getLevel() + 1;
+                                if (raiseLevel <= 4) {
+                                    Bid resp = new Bid(raiseLevel, partnerSuit);
+                                    if (isBidAllowed(resp)) {
+                                        System.out.println("  Simple raise with 5+ HCP to " + resp);
+                                        return resp;
+                                    }
+                                }
                             }
                         }
                     }

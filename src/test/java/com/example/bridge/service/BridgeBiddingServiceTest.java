@@ -337,9 +337,9 @@ class BridgeBiddingServiceTest {
 
     @Test
     void testResponseRaiseWithFit() {
-        // Partner opens 1H, responder has 8 HCP and 5 hearts
+        // Partner opens 1H, responder has 5 HCP and 5 hearts
         var cards = new java.util.ArrayList<com.example.bridge.model.Card>();
-        // 8 HCP: K, Q, rest low
+        // 5 HCP: K (3), Q (2)
         cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.HEARTS,
                 com.example.bridge.model.Card.Rank.KING)); // 3
         cards.add(new com.example.bridge.model.Card(com.example.bridge.model.Card.Suit.HEARTS,
@@ -360,7 +360,8 @@ class BridgeBiddingServiceTest {
         openBid.setPlayer(com.example.bridge.model.Player.NORTH);
         history.add(openBid);
         var bid = service.getSimpleNaturalBid(hand, history);
-        assertFalse(bid.isPass(), "Should not pass with 8 HCP and fit");
+        // With 5 HCP and 5-card support, we should raise to 2H
+        assertFalse(bid.isPass(), "Should not pass with 5 HCP and fit");
         assertEquals(2, bid.getLevel(), "Should raise to 2-level");
         assertEquals(com.example.bridge.model.Card.Suit.HEARTS, bid.getSuit(), "Should raise partner's suit");
     }
