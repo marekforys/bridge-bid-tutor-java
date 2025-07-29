@@ -129,4 +129,50 @@ public class BridgeBiddingControllerTest {
                 org.hamcrest.Matchers.arrayContaining(expectedRounds.get(1))
             )));
     }
+
+    @Test
+    void testBiddingTable_WhenDealerIsSouth() throws Exception {
+        // Given
+        Player dealer = Player.SOUTH;
+        Bid bid1 = new Bid(1, Card.Suit.CLUBS);
+        Bid bid2 = Bid.pass();
+        Bid bid3 = new Bid(1, Card.Suit.HEARTS);
+        Bid bid4 = Bid.pass();
+        Bid bid5 = Bid.pass();
+        List<Bid> bids = List.of(bid1, bid2, bid3, bid4, bid5);
+
+        Deal mockDeal = new Deal();
+        mockDeal.setDealer(dealer);
+        Hand northHand = new Hand(new java.util.ArrayList<>());
+        northHand.setPlayer(Player.NORTH);
+        Hand eastHand = new Hand(new java.util.ArrayList<>());
+        eastHand.setPlayer(Player.EAST);
+        Hand southHand = new Hand(new java.util.ArrayList<>());
+        southHand.setPlayer(Player.SOUTH);
+        Hand westHand = new Hand(new java.util.ArrayList<>());
+        westHand.setPlayer(Player.WEST);
+        mockDeal.setHands(List.of(northHand, eastHand, southHand, westHand));
+
+        when(bridgeBiddingService.getCurrentDeal()).thenReturn(mockDeal);
+        when(bridgeBiddingService.getBiddingHistory()).thenReturn(bids);
+        when(bridgeBiddingService.getCurrentDealer()).thenReturn(dealer);
+        when(bridgeBiddingService.isBiddingFinished()).thenReturn(false);
+        when(bridgeBiddingService.getUserSeat()).thenReturn(Player.NORTH);
+        when(bridgeBiddingService.getCurrentBidderIndex()).thenReturn(2);
+
+        // Expected biddingRounds structure
+        List<String[]> expectedRounds = List.of(
+            new String[]{"", "", renderBidHtml(bid1), renderBidHtml(bid2)},
+            new String[]{renderBidHtml(bid3), renderBidHtml(bid4), renderBidHtml(bid5), ""}
+        );
+
+        // When & Then
+        mockMvc.perform(get("/"))
+            .andExpect(status().isOk())
+            .andExpect(model().attribute("biddingRounds", org.hamcrest.Matchers.hasSize(2)))
+            .andExpect(model().attribute("biddingRounds", org.hamcrest.Matchers.contains(
+                org.hamcrest.Matchers.arrayContaining(expectedRounds.get(0)),
+                org.hamcrest.Matchers.arrayContaining(expectedRounds.get(1))
+            )));
+    }
 }
