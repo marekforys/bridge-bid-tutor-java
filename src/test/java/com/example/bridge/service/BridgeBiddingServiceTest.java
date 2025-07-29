@@ -2,6 +2,7 @@ package com.example.bridge.service;
 
 import com.example.bridge.model.Bid;
 import com.example.bridge.model.Card;
+import com.example.bridge.model.Player;
 import com.example.bridge.repository.DealRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,6 +48,62 @@ class BridgeBiddingServiceTest {
         assertEquals((start + 1) % 4, service.getCurrentBidderIndex());
         service.makeBid(new Bid(1, Card.Suit.DIAMONDS));
         assertEquals((start + 2) % 4, service.getCurrentBidderIndex());
+    }
+    
+    @Test
+    void testBidAssignmentWithDealer() {
+        // Set up a new service and deal with a mock repository
+        DealRepository mockRepository = mock(DealRepository.class);
+        service = new BridgeBiddingService();
+        
+        // Inject the mock repository
+        try {
+            var field = BridgeBiddingService.class.getDeclaredField("dealRepository");
+            field.setAccessible(true);
+            field.set(service, mockRepository);
+        } catch (Exception e) {
+            fail("Failed to inject mock repository", e);
+        }
+        
+        // Start a new deal
+        service.startNewDeal();
+        
+        // Get the dealer and their index
+        var dealer = service.getCurrentDealer();
+        int dealerIndex = dealer.ordinal();
+        
+        // Make several bids to complete the bidding
+        service.makeBid(new Bid(1, Card.Suit.HEARTS));  // Dealer
+        service.makeBid(Bid.pass());                    // Dealer + 1
+        service.makeBid(new Bid(2, Card.Suit.SPADES));  // Dealer + 2
+        service.makeBid(Bid.pass());                    // Dealer + 3
+        
+        // Complete the bidding with 3 passes
+        service.makeBid(Bid.pass());
+        service.makeBid(Bid.pass());
+        service.makeBid(Bid.pass());
+        
+        // Manually trigger saveDealIfFinished to assign players to bids
+        service.saveDealIfFinished();
+        
+        // Get the bidding history
+        var history = service.getBiddingHistory();
+        
+        // Verify the first bid is from the dealer
+        assertEquals(dealer, history.get(0).getPlayer(),
+            "First bid should be from the dealer");
+            
+        // Verify the second bid is from the next player
+        int expectedSecondPlayer = (dealerIndex + 1) % 4;
+        assertEquals(Player.values()[expectedSecondPlayer], history.get(1).getPlayer(),
+            String.format("Second bid should be from player %s (dealer + 1)", 
+                Player.values()[expectedSecondPlayer]));
+            
+        // Verify the third bid is from the following player
+        int expectedThirdPlayer = (dealerIndex + 2) % 4;
+        assertEquals(Player.values()[expectedThirdPlayer], history.get(2).getPlayer(),
+            String.format("Third bid should be from player %s (dealer + 2)", 
+                Player.values()[expectedThirdPlayer]));
     }
 
     @Test

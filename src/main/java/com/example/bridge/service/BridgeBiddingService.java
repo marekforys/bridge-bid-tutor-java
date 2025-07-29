@@ -109,7 +109,8 @@ public class BridgeBiddingService {
 
     public void saveDealIfFinished() {
         if (isBiddingFinished() && currentDeal != null) {
-            int dealerIndex = ((dealNumber - 1) % 4 + 4) % 4;
+            // Use the dealer that was set when the deal was created
+            int dealerIndex = currentDeal.getDealer().ordinal();
             for (int i = 0; i < biddingHistory.size(); i++) {
                 Bid bid = biddingHistory.get(i);
                 bid.setDeal(currentDeal);
