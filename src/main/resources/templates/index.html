@@ -86,6 +86,32 @@
         .dropdown-items div:hover {
             background: #eee;
         }
+        
+        /* Dealer and current bidder highlighting */
+        .dealer {
+            position: relative;
+        }
+        
+        .dealer::after {
+            content: "D";
+            position: absolute;
+            top: -15px;
+            right: 5px;
+            font-size: 10px;
+            color: #ff0;
+            font-weight: bold;
+            text-shadow: 1px 1px 1px #000;
+        }
+        
+        .dealer-col {
+            border-left: 2px solid #ff0 !important;
+            border-right: 2px solid #ff0 !important;
+        }
+        
+        .current-bidder {
+            background-color: rgba(255, 255, 0, 0.2) !important;
+            font-weight: bold;
+        }
         .suit-red { color: red; }
         .suit-black { color: black; }
         ul { list-style: none; padding: 0; }
@@ -288,18 +314,30 @@
                     <table style="width:100%; margin-bottom:12px; background:transparent; border:none;">
                         <thead>
                             <tr>
-                                <th style="text-align:center;">N</th>
-                                <th style="text-align:center;">E</th>
-                                <th style="text-align:center;">S</th>
-                                <th style="text-align:center;">W</th>
+                                <th th:classappend="${dealer == T(com.example.bridge.model.Player).NORTH} ? 'dealer' : ''" 
+                                    style="text-align:center;">N</th>
+                                <th th:classappend="${dealer == T(com.example.bridge.model.Player).EAST} ? 'dealer' : ''" 
+                                    style="text-align:center;">E</th>
+                                <th th:classappend="${dealer == T(com.example.bridge.model.Player).SOUTH} ? 'dealer' : ''" 
+                                    style="text-align:center;">S</th>
+                                <th th:classappend="${dealer == T(com.example.bridge.model.Player).WEST} ? 'dealer' : ''" 
+                                    style="text-align:center;">W</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="round : ${biddingRounds}">
-                                <td th:utext="${round[0]}"></td>
-                                <td th:utext="${round[1]}"></td>
-                                <td th:utext="${round[2]}"></td>
-                                <td th:utext="${round[3]}"></td>
+                            <tr th:each="round, rowStat : ${biddingRounds}">
+                                <td th:class="${currentBidderIndex == 0 && rowStat.last ? 'current-bidder' : ''}" 
+                                    th:classappend="${dealer == T(com.example.bridge.model.Player).NORTH} ? 'dealer-col' : ''"
+                                    th:utext="${round[0]}"></td>
+                                <td th:class="${currentBidderIndex == 1 && rowStat.last ? 'current-bidder' : ''}" 
+                                    th:classappend="${dealer == T(com.example.bridge.model.Player).EAST} ? 'dealer-col' : ''"
+                                    th:utext="${round[1]}"></td>
+                                <td th:class="${currentBidderIndex == 2 && rowStat.last ? 'current-bidder' : ''}" 
+                                    th:classappend="${dealer == T(com.example.bridge.model.Player).SOUTH} ? 'dealer-col' : ''"
+                                    th:utext="${round[2]}"></td>
+                                <td th:class="${currentBidderIndex == 3 && rowStat.last ? 'current-bidder' : ''}" 
+                                    th:classappend="${dealer == T(com.example.bridge.model.Player).WEST} ? 'dealer-col' : ''"
+                                    th:utext="${round[3]}"></td>
                             </tr>
                         </tbody>
                     </table>

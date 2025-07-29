@@ -51,7 +51,8 @@ public class BridgeBiddingController {
         }
         // Set the dealer for the current deal (cycling N, E, S, W)
         Player dealer = biddingService.getCurrentDealer();
-        model.addAttribute("dealer", dealer.toString().substring(0, 1));
+        model.addAttribute("dealer", dealer);
+        model.addAttribute("dealerIndex", dealer.ordinal());
         // Get user seat
         Player userSeat = biddingService.getUserSeat();
         model.addAttribute("userSeat", userSeat);

@@ -44,10 +44,14 @@ public class BridgeBiddingService {
         }
         currentDeal = deal;
         biddingHistory.clear();
-        // Increment dealNumber first, then set dealer and currentBidderIndex
+        // Increment deal number and set dealer
         dealNumber++;
-        int dealerIndex = ((dealNumber - 1) % 4 + 4) % 4;
+        // Dealer rotates through N, E, S, W with each deal
+        int dealerIndex = (dealNumber - 1) % 4;
+        // Set current bidder to the dealer (bidding starts with dealer)
         currentBidderIndex = dealerIndex;
+        // Set the dealer in the deal for reference
+        deal.setDealer(Player.values()[dealerIndex]);
         // Randomly assign user seat
         userSeat = Player.values()[new Random().nextInt(4)];
         return currentDeal;
@@ -122,6 +126,10 @@ public class BridgeBiddingService {
     }
 
     public Player getCurrentDealer() {
+        if (currentDeal != null && currentDeal.getDealer() != null) {
+            return currentDeal.getDealer();
+        }
+        // Fallback to the old calculation if dealer is not set
         return Player.values()[((dealNumber - 1) % 4 + 4) % 4];
     }
 

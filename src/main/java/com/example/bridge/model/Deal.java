@@ -17,6 +17,9 @@ public class Deal {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "deal", fetch = FetchType.EAGER)
     private List<Bid> bids;
 
+    @Enumerated(EnumType.STRING)
+    private Player dealer;
+
     public Deal() {
     }
 
@@ -51,5 +54,13 @@ public class Deal {
 
     public void setBiddingSystem(String biddingSystem) {
         this.biddingSystem = biddingSystem;
+    }
+
+    public Player getDealer() {
+        return dealer;
+    }
+
+    public void setDealer(Player dealer) {
+        this.dealer = dealer;
     }
 }
