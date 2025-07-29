@@ -34,11 +34,13 @@ public class BridgeBiddingController {
             // --- AUTO BIDDING LOGIC FOR SINGLE HAND MODE ON FIRST DEAL ---
             if ("single".equals(trainingMode)) {
                 int userSeatIndex = biddingService.getUserSeat().ordinal();
-                while (!biddingService.isBiddingFinished() && biddingService.getCurrentBidderIndex() != userSeatIndex) {
-                    Player currentBidder = Player.values()[biddingService.getCurrentBidderIndex()];
-                    Hand autoHand = biddingService.getHandForPlayer(currentBidder);
+                int nextBidderIndex = biddingService.getCurrentBidderIndex();
+                while (!biddingService.isBiddingFinished() && nextBidderIndex != userSeatIndex) {
+                    Player autoPlayer = Player.values()[nextBidderIndex];
+                    Hand autoHand = biddingService.getHandForPlayer(autoPlayer);
                     Bid autoBid = biddingService.getSimpleNaturalBid(autoHand, biddingService.getBiddingHistory());
                     biddingService.makeBid(autoBid);
+                    nextBidderIndex = biddingService.getCurrentBidderIndex();
                 }
             }
         }
@@ -64,7 +66,6 @@ public class BridgeBiddingController {
         model.addAttribute("hand", hand);
         model.addAttribute("handIndex", currentBidderIndex);
         model.addAttribute("handBySuit", hand.getSortedCardsBySuitName());
-        int totalCards = hand.getCards() == null ? 0 : hand.getCards().size();
         int totalPoints = 0;
         if (hand.getCards() != null) {
             for (Card card : hand.getCards()) {
@@ -90,61 +91,7 @@ public class BridgeBiddingController {
         model.addAttribute("deal", deal);
         // Precompute biddingRounds for the template
         List<Bid> biddingHistory = biddingService.getBiddingHistory();
-        List<String[]> biddingRounds = new ArrayList<>();
-        
-        // Get dealer index (0=N, 1=E, 2=S, 3=W)
-        int dealerIndex = dealer.ordinal();
-        int numBids = biddingHistory.size();
-        
-        // Calculate how many rounds we need
-        int numRounds = (numBids + 3) / 4; // Round up to nearest 4
-        
-        // Create the bidding rounds
-        for (int round = 0; round < numRounds; round++) {
-            String[] roundBids = new String[4];
-            Arrays.fill(roundBids, "-");
-            
-            // Fill in the bids for this round
-            for (int pos = 0; pos < 4; pos++) {
-                int bidIndex = round * 4 + pos;
-                if (bidIndex < numBids) {
-                    Bid bid = biddingHistory.get(bidIndex);
-                    String bidText;
-                    
-                    if (bid.isPass()) {
-                        bidText = "Pass";
-                    } else {
-                        String suitIcon;
-                        switch (bid.getSuit()) {
-                            case SPADES:
-                                suitIcon = "<span style='color:black'>&#9824;</span>";
-                                break;
-                            case HEARTS:
-                                suitIcon = "<span style='color:red'>&#9829;</span>";
-                                break;
-                            case DIAMONDS:
-                                suitIcon = "<span style='color:red'>&#9830;</span>";
-                                break;
-                            case CLUBS:
-                                suitIcon = "<span style='color:black'>&#9827;</span>";
-                                break;
-                            case NOTRUMP:
-                                suitIcon = "NT";
-                                break;
-                            default:
-                                suitIcon = "";
-                        }
-                        bidText = bid.getLevel() + " " + suitIcon;
-                    }
-                    
-                    // Calculate which player column this bid should go in
-                    // The first bid goes to the dealer, then clockwise
-                    int playerColumn = (dealerIndex + bidIndex) % 4;
-                    roundBids[playerColumn] = bidText;
-                }
-            }
-            biddingRounds.add(roundBids);
-        }
+        List<String[]> biddingRounds = prepareBiddingTable(biddingHistory, dealer);
         model.addAttribute("biddingRounds", biddingRounds);
         // For popup: all hands by suit
         List<Map<String, List<Card>>> handsBySuit = new java.util.ArrayList<>();
@@ -272,21 +219,23 @@ public class BridgeBiddingController {
         // --- AUTO BIDDING LOGIC FOR SINGLE HAND MODE ---
         if ("single".equals(trainingMode)) {
             int userSeatIndex = biddingService.getUserSeat().ordinal();
-            while (!biddingService.isBiddingFinished() && biddingService.getCurrentBidderIndex() != userSeatIndex) {
-                Player currentBidder = Player.values()[biddingService.getCurrentBidderIndex()];
-                Hand autoHand = biddingService.getHandForPlayer(currentBidder);
+            int nextBidderIndex = biddingService.getCurrentBidderIndex();
+            while (!biddingService.isBiddingFinished() && nextBidderIndex != userSeatIndex) {
+                Player autoPlayer = Player.values()[nextBidderIndex];
+                Hand autoHand = biddingService.getHandForPlayer(autoPlayer);
                 Bid autoBid = biddingService.getSimpleNaturalBid(autoHand, biddingService.getBiddingHistory());
                 if (!biddingService.isBidAllowed(autoBid)) {
                     autoBid = Bid.pass();
                 }
                 biddingService.makeBid(autoBid);
+                nextBidderIndex = biddingService.getCurrentBidderIndex();
             }
         }
         biddingService.saveDealIfFinished();
         return "redirect:/";
     }
 
-    @GetMapping("/advice/{handIndex}")
+// ...
     @ResponseBody
     public String getAdvice(@PathVariable int handIndex) {
         Deal deal = biddingService.getCurrentDeal();
@@ -365,6 +314,35 @@ public class BridgeBiddingController {
             com.example.bridge.model.Card.Suit.CLUBS
         ));
         return "current-deal-popup";
+    }
+
+    // Helper for Thymeleaf to render bid with suit icon
+    private List<String[]> prepareBiddingTable(List<Bid> bids, Player dealer) {
+        List<String[]> biddingRounds = new ArrayList<>();
+        if (bids.isEmpty()) {
+            return biddingRounds;
+        }
+
+        int dealerIndex = dealer.ordinal();
+        int totalBids = bids.size();
+
+        // Create a flat list representing the grid cells, initialized to ""
+        List<String> grid = new ArrayList<>(java.util.Collections.nCopies((dealerIndex + totalBids + 3) / 4 * 4, ""));
+
+        for (int i = 0; i < totalBids; i++) {
+            Bid bid = bids.get(i);
+            int playerIndex = (dealerIndex + i) % 4;
+            int roundIndex = (dealerIndex + i) / 4;
+            int gridIndex = roundIndex * 4 + playerIndex;
+            grid.set(gridIndex, renderBidHtml(bid));
+        }
+
+        // Group the flat list into rounds of 4
+        for (int i = 0; i < grid.size(); i += 4) {
+            biddingRounds.add(grid.subList(i, i + 4).toArray(new String[0]));
+        }
+
+        return biddingRounds;
     }
 
     // Helper for Thymeleaf to render bid with suit icon

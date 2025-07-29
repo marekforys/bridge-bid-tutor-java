@@ -91,20 +91,20 @@ public class BridgeBiddingService {
         return highest == null || newBid.compareTo(highest) > 0;
     }
 
-    public boolean isBiddingFinished() {
-        if (biddingHistory.size() < 4)
-            return false;
-        int n = biddingHistory.size();
-        return biddingHistory.get(n - 1).isPass() && biddingHistory.get(n - 2).isPass()
-                && biddingHistory.get(n - 3).isPass();
-    }
-
     public void setBiddingSystem(String system) {
         this.biddingSystem = system;
     }
 
     public String getBiddingSystem() {
         return biddingSystem;
+    }
+
+    public boolean isBiddingFinished() {
+        if (biddingHistory.size() < 4)
+            return false;
+        int n = biddingHistory.size();
+        return biddingHistory.get(n - 1).isPass() && biddingHistory.get(n - 2).isPass()
+                && biddingHistory.get(n - 3).isPass();
     }
 
     public void saveDealIfFinished() {
@@ -182,7 +182,6 @@ public class BridgeBiddingService {
         // --- RESPONSE LOGIC ---
         Player me = hand.getPlayer();
         if (me != null) {
-            Player partner = me.getPartner();
             // Find partner's last non-pass bid
             if (history != null && !history.isEmpty()) {
                 Bid partnerLastBid = null;
@@ -198,30 +197,30 @@ public class BridgeBiddingService {
                         hasBid = true;
                     }
                 }
-                
+
                 // Only process response if it's our turn to bid and partner has made a bid
                 if (partnerLastBid != null && !hasBid) {
                     System.out.println("Partner's last bid: " + partnerLastBid);
                     System.out.println("My HCP: " + hcp);
-                    
+
                     // Check for NT responses first when partner opens a minor
-                    if ((partnerLastBid.getSuit() == Card.Suit.CLUBS || partnerLastBid.getSuit() == Card.Suit.DIAMONDS) && 
-                        partnerLastBid.getLevel() == 1) {
+                    if ((partnerLastBid.getSuit() == Card.Suit.CLUBS || partnerLastBid.getSuit() == Card.Suit.DIAMONDS) &&
+                            partnerLastBid.getLevel() == 1) {
                         if (hcp >= 6 && hcp <= 9) {
                             return new Bid(1, Card.Suit.NOTRUMP);
                         } else if (hcp >= 10 && hcp <= 12) {
                             return new Bid(2, Card.Suit.NOTRUMP);
                         }
                     }
-                    
+
                     // Then check for raises
                     if (partnerLastBid.getSuit() != null && partnerLastBid.getSuit() != Card.Suit.NOTRUMP) {
                         final Card.Suit partnerSuit = partnerLastBid.getSuit();
                         int count = (int) hand.getCards().stream()
-                            .filter(c -> c.getSuit() == partnerSuit)
-                            .limit(13) // Ensure we don't count more than 13 cards
-                            .count();
-                            
+                                .filter(c -> c.getSuit() == partnerSuit)
+                                .limit(13) // Ensure we don't count more than 13 cards
+                                .count();
+
                         // With 4+ support, raise partner's suit
                         if (count >= 4) {
                             // Single raise with 6-9 HCP
@@ -294,23 +293,25 @@ public class BridgeBiddingService {
                 }
             }
         }
+
         // --- END RESPONSE LOGIC ---
-        
-        if (hcp < 12)
+
+        if (hcp < 12) {
             return Bid.pass();
-            
+        }
+
         // Find longest suit, with standard bridge suit order for tie-breaking
         Map<Card.Suit, List<Card>> bySuit = hand.getCardsBySuit();
         Card.Suit longest = null;
         int maxLength = 0;
-        
+
         // First find the maximum length of any suit
         for (List<Card> cardsInSuit : bySuit.values()) {
             if (cardsInSuit.size() > maxLength) {
                 maxLength = cardsInSuit.size();
             }
         }
-        
+
         // Then find the highest-ranking suit with that length
         // Standard order: Spades > Hearts > Diamonds > Clubs
         if (bySuit.getOrDefault(Card.Suit.SPADES, List.of()).size() == maxLength) {
@@ -322,10 +323,11 @@ public class BridgeBiddingService {
         } else if (bySuit.getOrDefault(Card.Suit.CLUBS, List.of()).size() == maxLength) {
             longest = Card.Suit.CLUBS;
         }
-        
-        if (longest == null)
+
+        if (longest == null) {
             return Bid.pass();
-            
+        }
+
         // Only open at 1-level for now
         return new Bid(1, longest);
     }
