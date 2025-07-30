@@ -7,8 +7,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class BridgeBiddingService {
+    private static final Logger logger = LoggerFactory.getLogger(BridgeBiddingService.class);
     @Autowired
     DealRepository dealRepository;
     private Deal currentDeal;
@@ -151,33 +155,10 @@ public class BridgeBiddingService {
 
     // Simple natural system: open 1 of the longest suit if 12+ HCP, else Pass
     public Bid getSimpleNaturalBid(Hand hand, List<Bid> history) {
-        System.out.println("\n--- New Bidding Decision ---");
-        System.out.println("Hand: " + hand);
-        System.out.println("History: " + history);
-        System.out.println("Hand cards: " + hand.getCards());
-        if (hand == null)
+        if (hand == null) {
             return Bid.pass();
-        
-        int hcp = 0;
-        for (Card card : hand.getCards()) {
-            switch (card.getRank()) {
-                case ACE:
-                    hcp += 4;
-                    break;
-                case KING:
-                    hcp += 3;
-                    break;
-                case QUEEN:
-                    hcp += 2;
-                    break;
-                case JACK:
-                    hcp += 1;
-                    break;
-                default:
-                    break;
-            }
-            System.out.println("Card: " + card + " HCP: " + hcp);
         }
+        final int hcp = hand.getHighCardPoints(); // Make final to emphasize it's calculated once
         
         // --- RESPONSE LOGIC ---
         Player me = hand.getPlayer();
@@ -185,23 +166,78 @@ public class BridgeBiddingService {
             // Find partner's last non-pass bid
             if (history != null && !history.isEmpty()) {
                 Bid partnerLastBid = null;
-                boolean hasBid = false;
-                System.out.println("Processing history...");
-                for (Bid bid : history) {
-                    System.out.println("  Bid: " + bid + " by " + bid.getPlayer());
-                    if (bid.getPlayer() != null && bid.getPlayer().getPartner() == hand.getPlayer()) {
-                        System.out.println("  Found partner's bid");
-                        partnerLastBid = bid;
-                    } else if (bid.getPlayer() != null && bid.getPlayer() == hand.getPlayer()) {
-                        System.out.println("  Found my previous bid");
-                        hasBid = true;
+                Bid myLastBid = null;
+                int myLastBidIndex = -1;
+                int partnerLastBidIndex = -1;
+
+                logger.info("--- Bidding Analysis for Player: {} ---", hand.getPlayer());
+                logger.info("Hand HCP: {}, Distribution: {}", hand.getHighCardPoints(), hand.getSuitDistribution());
+
+                for (int i = history.size() - 1; i >= 0; i--) {
+                    Bid bid = history.get(i);
+                    if (!bid.isPass() && bid.getPlayer() != null) {
+                        if (bid.getPlayer() == hand.getPlayer()) {
+                            if (myLastBid == null) {
+                                myLastBid = bid;
+                                myLastBidIndex = i;
+                            }
+                        } else if (bid.getPlayer().getPartner() == hand.getPlayer()) {
+                            if (partnerLastBid == null) {
+                                partnerLastBid = bid;
+                                partnerLastBidIndex = i;
+                            }
+                        }
                     }
                 }
 
-                // Only process response if it's our turn to bid and partner has made a bid
-                if (partnerLastBid != null && !hasBid) {
-                    System.out.println("Partner's last bid: " + partnerLastBid);
-                    System.out.println("My HCP: " + hcp);
+                logger.info("My Last Bid: {} (index {}), Partner Last Bid: {} (index {})", myLastBid, myLastBidIndex, partnerLastBid, partnerLastBidIndex);
+
+                // --- Bidding Logic Flow ---
+
+                // 1. Check for Opener's Rebid
+                logger.info("Checking Opener's Rebid logic...");
+                if (myLastBid != null && partnerLastBid != null && myLastBidIndex < partnerLastBidIndex) {
+                    // After partner's Stayman 2C bid
+                    if (myLastBid.equals(new Bid(1, Card.Suit.NOTRUMP)) && partnerLastBid.equals(new Bid(2, Card.Suit.CLUBS))) {
+                        logger.info("Condition met for Stayman rebid.");
+                        long hearts = hand.getCards().stream().filter(c -> c.getSuit() == Card.Suit.HEARTS).count();
+                        long spades = hand.getCards().stream().filter(c -> c.getSuit() == Card.Suit.SPADES).count();
+
+                        if (hearts >= 4) { logger.info("Rebidding 2H"); return new Bid(2, Card.Suit.HEARTS); }
+                        if (spades >= 4) { logger.info("Rebidding 2S"); return new Bid(2, Card.Suit.SPADES); }
+                        logger.info("Rebidding 2D");
+                        return new Bid(2, Card.Suit.DIAMONDS);
+                    }
+                    // Other rebid logic can be added here.
+                    return Bid.pass(); // Default rebid is to pass if no other condition is met.
+                }
+
+                // 2. Check for Responder's First Bid
+                logger.info("Checking Responder's First Bid logic...");
+                boolean isMyTurnToRespond = partnerLastBid != null && (myLastBid == null || myLastBidIndex < partnerLastBidIndex);
+                if (isMyTurnToRespond) {
+                    logger.info("Condition met for Responder's logic.");
+
+                    // Respond to partner's 1NT opening
+                    if (partnerLastBid.getLevel() == 1 && partnerLastBid.getSuit() == Card.Suit.NOTRUMP) {
+                        logger.info("Checking Responder's 1NT response logic...");
+                        // Check for Stayman: 8+ HCP and a 4-card major
+                        if (hcp >= 8) {
+                            logger.info("Checking for Stayman...");
+                            long hearts = hand.getCards().stream().filter(c -> c.getSuit() == Card.Suit.HEARTS).count();
+                            long spades = hand.getCards().stream().filter(c -> c.getSuit() == Card.Suit.SPADES).count();
+                            logger.info("Hearts: {}, Spades: {}", hearts, spades);
+                            if (hearts >= 4 || spades >= 4) {
+                                logger.info("Returning Stayman bid...");
+                                return new Bid(2, Card.Suit.CLUBS); // Stayman
+                            }
+                        }
+
+                        // Standard NT responses if Stayman is not applicable
+                        if (hcp >= 10) return new Bid(3, Card.Suit.NOTRUMP); // Game
+                        if (hcp >= 8) return new Bid(2, Card.Suit.NOTRUMP); // Invitational
+                        return Bid.pass(); // 0-7 HCP
+                    }
 
                     // Check for NT responses first when partner opens a minor
                     if ((partnerLastBid.getSuit() == Card.Suit.CLUBS || partnerLastBid.getSuit() == Card.Suit.DIAMONDS) &&
@@ -228,7 +264,6 @@ public class BridgeBiddingService {
                                 int raiseLevel = partnerLastBid.getLevel() + 1;
                                 Bid resp = new Bid(raiseLevel, partnerSuit);
                                 if (isBidAllowed(resp)) {
-                                    System.out.println("  Single raise to " + resp);
                                     return resp;
                                 }
                             }
@@ -239,7 +274,6 @@ public class BridgeBiddingService {
                                 if (raiseLevel <= 4) {
                                     Bid resp = new Bid(raiseLevel, partnerSuit);
                                     if (isBidAllowed(resp)) {
-                                        System.out.println("  Double raise to " + resp);
                                         return resp;
                                     }
                                 }
@@ -250,7 +284,6 @@ public class BridgeBiddingService {
                                 if (raiseLevel <= 4) {
                                     Bid resp = new Bid(raiseLevel, partnerSuit);
                                     if (isBidAllowed(resp)) {
-                                        System.out.println("  Simple raise with 5+ HCP to " + resp);
                                         return resp;
                                     }
                                 }
@@ -262,9 +295,7 @@ public class BridgeBiddingService {
                         // 1NT response to 1-level opening
                         if (partnerLastBid.getLevel() == 1) {
                             Bid resp = new Bid(1, Card.Suit.NOTRUMP);
-                            System.out.println("  Considering 1NT response");
                             if (isBidAllowed(resp)) {
-                                System.out.println("  Returning 1NT response");
                                 return resp;
                             } else {
                                 System.out.println("  1NT response not allowed");
@@ -296,6 +327,14 @@ public class BridgeBiddingService {
 
         // --- END RESPONSE LOGIC ---
 
+        // Opening bids logic
+        logger.info("Evaluating for an opening bid...");
+        // Check for 1NT opening: 15-17 HCP and a balanced hand
+        if (hcp >= 15 && hcp <= 17 && isBalanced(hand)) {
+            logger.info("Opening 1NT.");
+            return new Bid(1, Card.Suit.NOTRUMP);
+        }
+
         if (hcp < 12) {
             return Bid.pass();
         }
@@ -325,10 +364,24 @@ public class BridgeBiddingService {
         }
 
         if (longest == null) {
+            logger.info("No openable suit found. Passing.");
             return Bid.pass();
         }
 
         // Only open at 1-level for now
+        logger.info("Opening 1 of longest suit: {}.");
         return new Bid(1, longest);
+    }
+
+    private boolean isBalanced(Hand hand) {
+        Map<Card.Suit, List<Card>> bySuit = hand.getCardsBySuit();
+        int doubletons = 0;
+        for (Card.Suit suit : Card.Suit.values()) {
+            if (suit == Card.Suit.NOTRUMP) continue;
+            int count = bySuit.getOrDefault(suit, Collections.emptyList()).size();
+            if (count < 2) return false; // Void or singleton
+            if (count == 2) doubletons++;
+        }
+        return doubletons <= 1;
     }
 }

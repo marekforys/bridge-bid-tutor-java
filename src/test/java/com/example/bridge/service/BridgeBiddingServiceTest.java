@@ -3,6 +3,10 @@ package com.example.bridge.service;
 import com.example.bridge.model.Bid;
 import com.example.bridge.model.Card;
 import com.example.bridge.model.Player;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import com.example.bridge.repository.DealRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -445,5 +449,188 @@ class BridgeBiddingServiceTest {
         history.add(openBid);
         var bid = service.getSimpleNaturalBid(hand, history);
         assertTrue(bid.isPass(), "Should pass with 4 HCP and no fit");
+    }
+
+    @Test
+    void testOpen1NTWithBalancedHand15to17HCP() {
+        // 16 HCP, balanced hand (4-3-3-3)
+        List<Card> cards = new ArrayList<>();
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.ACE)); // 4
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.KING)); // 3
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.QUEEN)); // 2
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.TWO));
+
+        cards.add(new Card(Card.Suit.HEARTS, Card.Rank.ACE)); // 4
+        cards.add(new Card(Card.Suit.HEARTS, Card.Rank.KING)); // 3
+        cards.add(new Card(Card.Suit.HEARTS, Card.Rank.TWO));
+
+        cards.add(new Card(Card.Suit.DIAMONDS, Card.Rank.JACK)); // 1
+        cards.add(new Card(Card.Suit.DIAMONDS, Card.Rank.TWO));
+        cards.add(new Card(Card.Suit.DIAMONDS, Card.Rank.THREE));
+
+        cards.add(new Card(Card.Suit.CLUBS, Card.Rank.TWO));
+        cards.add(new Card(Card.Suit.CLUBS, Card.Rank.THREE));
+        cards.add(new Card(Card.Suit.CLUBS, Card.Rank.FOUR));
+
+        Hand hand = new Hand(cards);
+        Bid bid = service.getSimpleNaturalBid(hand, Collections.emptyList());
+
+        assertFalse(bid.isPass(), "Should not pass with 16 HCP and balanced hand");
+        assertEquals(1, bid.getLevel());
+        assertEquals(Card.Suit.NOTRUMP, bid.getSuit());
+    }
+
+    @Test
+    void testRespondTo1NT_PassWithWeakHand() {
+        // 5 HCP
+        List<Card> cards = new ArrayList<>();
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.KING)); // 3
+        cards.add(new Card(Card.Suit.HEARTS, Card.Rank.QUEEN)); // 2
+        Hand hand = new Hand(cards);
+        hand.setPlayer(Player.SOUTH);
+
+        Bid partnerBid = new Bid(1, Card.Suit.NOTRUMP);
+        partnerBid.setPlayer(Player.NORTH);
+        List<Bid> history = List.of(partnerBid);
+
+        Bid response = service.getSimpleNaturalBid(hand, history);
+        assertTrue(response.isPass(), "Should pass with 5 HCP");
+    }
+
+    @Test
+    void testRespondTo1NT_InviteWith8HCP() {
+        // 8 HCP
+        List<Card> cards = new ArrayList<>();
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.ACE)); // 4
+        cards.add(new Card(Card.Suit.HEARTS, Card.Rank.KING)); // 3
+        cards.add(new Card(Card.Suit.DIAMONDS, Card.Rank.JACK)); // 1
+        Hand hand = new Hand(cards);
+        hand.setPlayer(Player.SOUTH);
+
+        Bid partnerBid = new Bid(1, Card.Suit.NOTRUMP);
+        partnerBid.setPlayer(Player.NORTH);
+        List<Bid> history = List.of(partnerBid);
+
+        Bid response = service.getSimpleNaturalBid(hand, history);
+        assertEquals(2, response.getLevel(), "Should bid 2NT with 8 HCP");
+        assertEquals(Card.Suit.NOTRUMP, response.getSuit(), "Should bid 2NT with 8 HCP");
+    }
+
+    @Test
+    void testRespondTo1NT_GameWith11HCP() {
+        // 11 HCP
+        List<Card> cards = new ArrayList<>();
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.ACE)); // 4
+        cards.add(new Card(Card.Suit.HEARTS, Card.Rank.ACE)); // 4
+        cards.add(new Card(Card.Suit.DIAMONDS, Card.Rank.KING)); // 3
+        Hand hand = new Hand(cards);
+        hand.setPlayer(Player.SOUTH);
+
+        Bid partnerBid = new Bid(1, Card.Suit.NOTRUMP);
+        partnerBid.setPlayer(Player.NORTH);
+        List<Bid> history = List.of(partnerBid);
+
+        Bid response = service.getSimpleNaturalBid(hand, history);
+        assertEquals(3, response.getLevel(), "Should bid 3NT with 11 HCP");
+        assertEquals(Card.Suit.NOTRUMP, response.getSuit(), "Should bid 3NT with 11 HCP");
+    }
+
+    @Test
+    void testRespondTo1NT_StaymanWith8HCPAnd4CardMajor() {
+        // 8 HCP, 4 spades
+        List<Card> cards = new ArrayList<>();
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.ACE)); // 4
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.KING)); // 3
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.TWO));
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.THREE));
+        cards.add(new Card(Card.Suit.HEARTS, Card.Rank.JACK)); // 1
+        Hand hand = new Hand(cards);
+        hand.setPlayer(Player.SOUTH);
+
+        Bid partnerBid = new Bid(1, Card.Suit.NOTRUMP);
+        partnerBid.setPlayer(Player.NORTH);
+        List<Bid> history = List.of(partnerBid);
+
+        Bid response = service.getSimpleNaturalBid(hand, history);
+        assertEquals(2, response.getLevel());
+        assertEquals(Card.Suit.CLUBS, response.getSuit(), "Should bid 2C Stayman with 8+ HCP and a 4-card major");
+    }
+
+    @Test
+    void testOpenerRebidToStayman_NoMajor() {
+        // 15 HCP, balanced, no 4-card major
+        List<Card> cards = new ArrayList<>();
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.ACE)); // 4
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.TWO));
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.THREE));
+        cards.add(new Card(Card.Suit.HEARTS, Card.Rank.ACE)); // 4
+        cards.add(new Card(Card.Suit.HEARTS, Card.Rank.TWO));
+        cards.add(new Card(Card.Suit.HEARTS, Card.Rank.THREE));
+        cards.add(new Card(Card.Suit.DIAMONDS, Card.Rank.ACE)); // 4
+        cards.add(new Card(Card.Suit.DIAMONDS, Card.Rank.TWO));
+        cards.add(new Card(Card.Suit.DIAMONDS, Card.Rank.THREE));
+        cards.add(new Card(Card.Suit.CLUBS, Card.Rank.ACE)); // 4
+        Hand hand = new Hand(cards);
+        hand.setPlayer(Player.NORTH);
+
+        Bid myBid = new Bid(1, Card.Suit.NOTRUMP);
+        myBid.setPlayer(Player.NORTH);
+        Bid partnerBid = new Bid(2, Card.Suit.CLUBS);
+        partnerBid.setPlayer(Player.SOUTH);
+        List<Bid> history = List.of(myBid, partnerBid);
+
+        Bid rebid = service.getSimpleNaturalBid(hand, history);
+        assertEquals(2, rebid.getLevel());
+        assertEquals(Card.Suit.DIAMONDS, rebid.getSuit(), "Should rebid 2D with no 4-card major");
+    }
+
+    @Test
+    void testOpenerRebidToStayman_With4Hearts() {
+        // 16 HCP, balanced, 4 hearts
+        List<Card> cards = new ArrayList<>();
+        cards.add(new Card(Card.Suit.HEARTS, Card.Rank.ACE)); // 4
+        cards.add(new Card(Card.Suit.HEARTS, Card.Rank.KING)); // 3
+        cards.add(new Card(Card.Suit.HEARTS, Card.Rank.TWO));
+        cards.add(new Card(Card.Suit.HEARTS, Card.Rank.THREE));
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.ACE)); // 4
+        cards.add(new Card(Card.Suit.DIAMONDS, Card.Rank.KING)); // 3
+        cards.add(new Card(Card.Suit.CLUBS, Card.Rank.QUEEN)); // 2
+        Hand hand = new Hand(cards);
+        hand.setPlayer(Player.NORTH);
+
+        Bid myBid = new Bid(1, Card.Suit.NOTRUMP);
+        myBid.setPlayer(Player.NORTH);
+        Bid partnerBid = new Bid(2, Card.Suit.CLUBS);
+        partnerBid.setPlayer(Player.SOUTH);
+        List<Bid> history = List.of(myBid, partnerBid);
+
+        Bid rebid = service.getSimpleNaturalBid(hand, history);
+        assertEquals(2, rebid.getLevel());
+        assertEquals(Card.Suit.HEARTS, rebid.getSuit(), "Should rebid 2H with 4 hearts");
+    }
+
+    @Test
+    void testOpenerRebidToStayman_With4Spades() {
+        // 16 HCP, balanced, 4 spades
+        List<Card> cards = new ArrayList<>();
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.ACE)); // 4
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.KING)); // 3
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.TWO));
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.THREE));
+        cards.add(new Card(Card.Suit.HEARTS, Card.Rank.ACE)); // 4
+        cards.add(new Card(Card.Suit.DIAMONDS, Card.Rank.KING)); // 3
+        cards.add(new Card(Card.Suit.CLUBS, Card.Rank.QUEEN)); // 2
+        Hand hand = new Hand(cards);
+        hand.setPlayer(Player.NORTH);
+
+        Bid myBid = new Bid(1, Card.Suit.NOTRUMP);
+        myBid.setPlayer(Player.NORTH);
+        Bid partnerBid = new Bid(2, Card.Suit.CLUBS);
+        partnerBid.setPlayer(Player.SOUTH);
+        List<Bid> history = List.of(myBid, partnerBid);
+
+        Bid rebid = service.getSimpleNaturalBid(hand, history);
+        assertEquals(2, rebid.getLevel());
+        assertEquals(Card.Suit.SPADES, rebid.getSuit(), "Should rebid 2S with 4 spades");
     }
 }

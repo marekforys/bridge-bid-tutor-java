@@ -11,9 +11,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BridgeBiddingController.class)
 public class BridgeBiddingControllerTest {
@@ -220,5 +220,86 @@ public class BridgeBiddingControllerTest {
                 org.hamcrest.Matchers.arrayContaining(expectedRounds.get(0)),
                 org.hamcrest.Matchers.arrayContaining(expectedRounds.get(1))
             )));
+    }
+
+    @Test
+    void testNewDeal() throws Exception {
+        // Given
+        Deal mockDeal = new Deal();
+        when(biddingService.startNewDeal()).thenReturn(mockDeal);
+
+        // When & Then
+        mockMvc.perform(post("/new-deal"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/"));
+
+        verify(biddingService, times(1)).startNewDeal();
+    }
+
+    @Test
+    void testMakeBid() throws Exception {
+        // Given
+        Bid userBid = new Bid(1, Card.Suit.SPADES);
+
+        // When & Then
+        mockMvc.perform(post("/make-bid")
+                .param("level", "1")
+                .param("suit", "SPADES"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/"));
+
+        verify(biddingService, times(1)).makeBid(userBid);
+    }
+
+    @Test
+    void testMakeBid_Pass() throws Exception {
+        // Given
+        Bid passBid = Bid.pass();
+
+        // When & Then
+        mockMvc.perform(post("/make-bid")
+                .param("pass", "true"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/"));
+
+        verify(biddingService, times(1)).makeBid(passBid);
+    }
+
+    @Test
+    void testPastDeals() throws Exception {
+        // Given
+        Deal deal1 = new Deal();
+        deal1.setDealer(Player.NORTH);
+        deal1.setBids(List.of(new Bid(1, Card.Suit.CLUBS), Bid.pass(), Bid.pass(), Bid.pass()));
+        Hand southHand = new Hand(Player.SOUTH, new ArrayList<>());
+        deal1.setHands(List.of(new Hand(Player.NORTH, new ArrayList<>()), new Hand(Player.EAST, new ArrayList<>()), southHand, new Hand(Player.WEST, new ArrayList<>())));
+
+        List<Deal> mockDeals = List.of(deal1);
+        when(biddingService.getAllDeals()).thenReturn(mockDeals);
+
+        // When & Then
+        mockMvc.perform(get("/past-deals"))
+            .andExpect(status().isOk())
+            .andExpect(view().name("past-deals"))
+            .andExpect(model().attributeExists("allDeals", "finalBids", "dealers"));
+    }
+
+    @Test
+    void testCurrentDealPopup() throws Exception {
+        // Given
+        Deal mockDeal = new Deal();
+        Hand northHand = new Hand(Player.NORTH, new ArrayList<>());
+        Hand eastHand = new Hand(Player.EAST, new ArrayList<>());
+        Hand southHand = new Hand(Player.SOUTH, new ArrayList<>());
+        Hand westHand = new Hand(Player.WEST, new ArrayList<>());
+        mockDeal.setHands(List.of(northHand, eastHand, southHand, westHand));
+
+        when(biddingService.getCurrentDeal()).thenReturn(mockDeal);
+
+        // When & Then
+        mockMvc.perform(get("/current-deal-popup"))
+            .andExpect(status().isOk())
+            .andExpect(view().name("current-deal-popup"))
+            .andExpect(model().attributeExists("deal", "handsBySuit"));
     }
 }

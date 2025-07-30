@@ -71,4 +71,19 @@ public class Bid implements Comparable<Bid> {
             return Integer.compare(this.level, other.level);
         return Integer.compare(this.suit.ordinal(), other.suit.ordinal());
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Bid bid = (Bid) o;
+        if (isPass) return bid.isPass;
+        if (bid.isPass) return false;
+        return level == bid.level && suit == bid.suit;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(isPass, level, suit);
+    }
 }

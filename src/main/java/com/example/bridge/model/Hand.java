@@ -3,6 +3,7 @@ package com.example.bridge.model;
 import jakarta.persistence.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 @Entity
@@ -72,5 +73,44 @@ public class Hand {
 
     public void setPlayer(Player player) {
         this.player = player;
+    }
+
+    public int getHighCardPoints() {
+        if (cards == null) {
+            return 0;
+        }
+        int hcp = 0;
+        for (Card card : cards) {
+            switch (card.getRank()) {
+                case ACE:
+                    hcp += 4;
+                    break;
+                case KING:
+                    hcp += 3;
+                    break;
+                case QUEEN:
+                    hcp += 2;
+                    break;
+                case JACK:
+                    hcp += 1;
+                    break;
+                default:
+                    break;
+            }
+        }
+        return hcp;
+    }
+
+    public String getSuitDistribution() {
+        if (cards == null) {
+            return "0-0-0-0";
+        }
+        Map<Card.Suit, List<Card>> bySuit = getCardsBySuit();
+        return String.format("%d-%d-%d-%d",
+                bySuit.getOrDefault(Card.Suit.SPADES, Collections.emptyList()).size(),
+                bySuit.getOrDefault(Card.Suit.HEARTS, Collections.emptyList()).size(),
+                bySuit.getOrDefault(Card.Suit.DIAMONDS, Collections.emptyList()).size(),
+                bySuit.getOrDefault(Card.Suit.CLUBS, Collections.emptyList()).size()
+        );
     }
 }
