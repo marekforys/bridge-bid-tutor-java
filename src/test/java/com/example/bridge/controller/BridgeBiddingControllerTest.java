@@ -6,11 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.Mockito;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Mockito.when;
+
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -51,22 +53,22 @@ public class BridgeBiddingControllerTest {
 
         Deal mockDeal = new Deal();
         mockDeal.setDealer(dealer);
-        Hand northHand = new Hand(new java.util.ArrayList<>());
+        Hand northHand = new Hand(new ArrayList<>());
         northHand.setPlayer(Player.NORTH);
-        Hand eastHand = new Hand(new java.util.ArrayList<>());
+        Hand eastHand = new Hand(new ArrayList<>());
         eastHand.setPlayer(Player.EAST);
-        Hand southHand = new Hand(new java.util.ArrayList<>());
+        Hand southHand = new Hand(new ArrayList<>());
         southHand.setPlayer(Player.SOUTH);
-        Hand westHand = new Hand(new java.util.ArrayList<>());
+        Hand westHand = new Hand(new ArrayList<>());
         westHand.setPlayer(Player.WEST);
         mockDeal.setHands(List.of(northHand, eastHand, southHand, westHand));
 
-        when(bridgeBiddingService.getCurrentDeal()).thenReturn(mockDeal);
-        when(bridgeBiddingService.getBiddingHistory()).thenReturn(bids);
-        when(bridgeBiddingService.getCurrentDealer()).thenReturn(dealer);
-        when(bridgeBiddingService.isBiddingFinished()).thenReturn(false);
-        when(bridgeBiddingService.getUserSeat()).thenReturn(Player.NORTH);
-        when(bridgeBiddingService.getCurrentBidderIndex()).thenReturn(1);
+        Mockito.when(bridgeBiddingService.getCurrentDeal()).thenReturn(mockDeal);
+        Mockito.when(bridgeBiddingService.getBiddingHistory()).thenReturn(bids);
+        Mockito.when(bridgeBiddingService.getCurrentDealer()).thenReturn(dealer);
+        Mockito.when(bridgeBiddingService.isBiddingFinished()).thenReturn(false);
+        Mockito.when(bridgeBiddingService.getUserSeat()).thenReturn(Player.NORTH);
+        Mockito.when(bridgeBiddingService.getCurrentBidderIndex()).thenReturn(1);
 
         // Expected biddingRounds structure
         List<String[]> expectedRounds = List.of(
@@ -97,22 +99,22 @@ public class BridgeBiddingControllerTest {
 
         Deal mockDeal = new Deal();
         mockDeal.setDealer(dealer);
-        Hand northHand = new Hand(new java.util.ArrayList<>());
+        Hand northHand = new Hand(new ArrayList<>());
         northHand.setPlayer(Player.NORTH);
-        Hand eastHand = new Hand(new java.util.ArrayList<>());
+        Hand eastHand = new Hand(new ArrayList<>());
         eastHand.setPlayer(Player.EAST);
-        Hand southHand = new Hand(new java.util.ArrayList<>());
+        Hand southHand = new Hand(new ArrayList<>());
         southHand.setPlayer(Player.SOUTH);
-        Hand westHand = new Hand(new java.util.ArrayList<>());
+        Hand westHand = new Hand(new ArrayList<>());
         westHand.setPlayer(Player.WEST);
         mockDeal.setHands(List.of(northHand, eastHand, southHand, westHand));
 
-        when(bridgeBiddingService.getCurrentDeal()).thenReturn(mockDeal);
-        when(bridgeBiddingService.getBiddingHistory()).thenReturn(bids);
-        when(bridgeBiddingService.getCurrentDealer()).thenReturn(dealer);
-        when(bridgeBiddingService.isBiddingFinished()).thenReturn(false);
-        when(bridgeBiddingService.getUserSeat()).thenReturn(Player.NORTH);
-        when(bridgeBiddingService.getCurrentBidderIndex()).thenReturn(0);
+        Mockito.when(bridgeBiddingService.getCurrentDeal()).thenReturn(mockDeal);
+        Mockito.when(bridgeBiddingService.getBiddingHistory()).thenReturn(bids);
+        Mockito.when(bridgeBiddingService.getCurrentDealer()).thenReturn(dealer);
+        Mockito.when(bridgeBiddingService.isBiddingFinished()).thenReturn(false);
+        Mockito.when(bridgeBiddingService.getUserSeat()).thenReturn(Player.NORTH);
+        Mockito.when(bridgeBiddingService.getCurrentBidderIndex()).thenReturn(0);
 
         // Expected biddingRounds structure
         List<String[]> expectedRounds = List.of(
@@ -143,22 +145,22 @@ public class BridgeBiddingControllerTest {
 
         Deal mockDeal = new Deal();
         mockDeal.setDealer(dealer);
-        Hand northHand = new Hand(new java.util.ArrayList<>());
+        Hand northHand = new Hand(new ArrayList<>());
         northHand.setPlayer(Player.NORTH);
-        Hand eastHand = new Hand(new java.util.ArrayList<>());
+        Hand eastHand = new Hand(new ArrayList<>());
         eastHand.setPlayer(Player.EAST);
-        Hand southHand = new Hand(new java.util.ArrayList<>());
+        Hand southHand = new Hand(new ArrayList<>());
         southHand.setPlayer(Player.SOUTH);
-        Hand westHand = new Hand(new java.util.ArrayList<>());
+        Hand westHand = new Hand(new ArrayList<>());
         westHand.setPlayer(Player.WEST);
         mockDeal.setHands(List.of(northHand, eastHand, southHand, westHand));
 
-        when(bridgeBiddingService.getCurrentDeal()).thenReturn(mockDeal);
-        when(bridgeBiddingService.getBiddingHistory()).thenReturn(bids);
-        when(bridgeBiddingService.getCurrentDealer()).thenReturn(dealer);
-        when(bridgeBiddingService.isBiddingFinished()).thenReturn(false);
-        when(bridgeBiddingService.getUserSeat()).thenReturn(Player.NORTH);
-        when(bridgeBiddingService.getCurrentBidderIndex()).thenReturn(2);
+        Mockito.when(bridgeBiddingService.getCurrentDeal()).thenReturn(mockDeal);
+        Mockito.when(bridgeBiddingService.getBiddingHistory()).thenReturn(bids);
+        Mockito.when(bridgeBiddingService.getCurrentDealer()).thenReturn(dealer);
+        Mockito.when(bridgeBiddingService.isBiddingFinished()).thenReturn(false);
+        Mockito.when(bridgeBiddingService.getUserSeat()).thenReturn(Player.NORTH);
+        Mockito.when(bridgeBiddingService.getCurrentBidderIndex()).thenReturn(2);
 
         // Expected biddingRounds structure
         List<String[]> expectedRounds = List.of(
@@ -189,22 +191,22 @@ public class BridgeBiddingControllerTest {
 
         Deal mockDeal = new Deal();
         mockDeal.setDealer(dealer);
-        Hand northHand = new Hand(new java.util.ArrayList<>());
+        Hand northHand = new Hand(new ArrayList<>());
         northHand.setPlayer(Player.NORTH);
-        Hand eastHand = new Hand(new java.util.ArrayList<>());
+        Hand eastHand = new Hand(new ArrayList<>());
         eastHand.setPlayer(Player.EAST);
-        Hand southHand = new Hand(new java.util.ArrayList<>());
+        Hand southHand = new Hand(new ArrayList<>());
         southHand.setPlayer(Player.SOUTH);
-        Hand westHand = new Hand(new java.util.ArrayList<>());
+        Hand westHand = new Hand(new ArrayList<>());
         westHand.setPlayer(Player.WEST);
         mockDeal.setHands(List.of(northHand, eastHand, southHand, westHand));
 
-        when(bridgeBiddingService.getCurrentDeal()).thenReturn(mockDeal);
-        when(bridgeBiddingService.getBiddingHistory()).thenReturn(bids);
-        when(bridgeBiddingService.getCurrentDealer()).thenReturn(dealer);
-        when(bridgeBiddingService.isBiddingFinished()).thenReturn(false);
-        when(bridgeBiddingService.getUserSeat()).thenReturn(Player.NORTH);
-        when(bridgeBiddingService.getCurrentBidderIndex()).thenReturn(3);
+        Mockito.when(bridgeBiddingService.getCurrentDeal()).thenReturn(mockDeal);
+        Mockito.when(bridgeBiddingService.getBiddingHistory()).thenReturn(bids);
+        Mockito.when(bridgeBiddingService.getCurrentDealer()).thenReturn(dealer);
+        Mockito.when(bridgeBiddingService.isBiddingFinished()).thenReturn(false);
+        Mockito.when(bridgeBiddingService.getUserSeat()).thenReturn(Player.NORTH);
+        Mockito.when(bridgeBiddingService.getCurrentBidderIndex()).thenReturn(3);
 
         // Expected biddingRounds structure
         List<String[]> expectedRounds = List.of(
@@ -226,20 +228,34 @@ public class BridgeBiddingControllerTest {
     void testNewDeal() throws Exception {
         // Given
         Deal mockDeal = new Deal();
-        when(biddingService.startNewDeal()).thenReturn(mockDeal);
+        Mockito.when(bridgeBiddingService.startNewDeal()).thenReturn(mockDeal);
+        Mockito.when(bridgeBiddingService.getUserSeat()).thenReturn(Player.NORTH);
 
         // When & Then
         mockMvc.perform(post("/new-deal"))
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("/"));
 
-        verify(biddingService, times(1)).startNewDeal();
+        verify(bridgeBiddingService, times(1)).startNewDeal();
     }
 
     @Test
     void testMakeBid() throws Exception {
         // Given
+        Mockito.when(bridgeBiddingService.getUserSeat()).thenReturn(Player.NORTH);
+        Mockito.when(bridgeBiddingService.getCurrentDealer()).thenReturn(Player.NORTH);
+        Mockito.when(bridgeBiddingService.getCurrentBidderIndex()).thenReturn(0);
+        Deal mockDeal = new Deal();
+        List<Hand> hands = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            Hand hand = new Hand(new ArrayList<>());
+            hand.setPlayer(Player.values()[i]);
+            hands.add(hand);
+        }
+        mockDeal.setHands(hands);
+        Mockito.when(bridgeBiddingService.getCurrentDeal()).thenReturn(mockDeal);
         Bid userBid = new Bid(1, Card.Suit.SPADES);
+        Mockito.when(bridgeBiddingService.isBidAllowed(userBid)).thenReturn(true);
 
         // When & Then
         mockMvc.perform(post("/make-bid")
@@ -248,13 +264,26 @@ public class BridgeBiddingControllerTest {
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("/"));
 
-        verify(biddingService, times(1)).makeBid(userBid);
+        verify(bridgeBiddingService, times(1)).makeBid(userBid);
     }
 
     @Test
     void testMakeBid_Pass() throws Exception {
         // Given
+        Mockito.when(bridgeBiddingService.getUserSeat()).thenReturn(Player.NORTH);
+        Mockito.when(bridgeBiddingService.getCurrentDealer()).thenReturn(Player.NORTH);
+        Mockito.when(bridgeBiddingService.getCurrentBidderIndex()).thenReturn(0);
+        Deal mockDeal = new Deal();
+        List<Hand> hands = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            Hand hand = new Hand(new ArrayList<>());
+            hand.setPlayer(Player.values()[i]);
+            hands.add(hand);
+        }
+        mockDeal.setHands(hands);
+        Mockito.when(bridgeBiddingService.getCurrentDeal()).thenReturn(mockDeal);
         Bid passBid = Bid.pass();
+        Mockito.when(bridgeBiddingService.isBidAllowed(passBid)).thenReturn(true);
 
         // When & Then
         mockMvc.perform(post("/make-bid")
@@ -262,7 +291,7 @@ public class BridgeBiddingControllerTest {
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("/"));
 
-        verify(biddingService, times(1)).makeBid(passBid);
+        verify(bridgeBiddingService, times(1)).makeBid(passBid);
     }
 
     @Test
@@ -271,11 +300,18 @@ public class BridgeBiddingControllerTest {
         Deal deal1 = new Deal();
         deal1.setDealer(Player.NORTH);
         deal1.setBids(List.of(new Bid(1, Card.Suit.CLUBS), Bid.pass(), Bid.pass(), Bid.pass()));
-        Hand southHand = new Hand(Player.SOUTH, new ArrayList<>());
-        deal1.setHands(List.of(new Hand(Player.NORTH, new ArrayList<>()), new Hand(Player.EAST, new ArrayList<>()), southHand, new Hand(Player.WEST, new ArrayList<>())));
+        Hand northHand_past = new Hand(new ArrayList<>());
+        northHand_past.setPlayer(Player.NORTH);
+        Hand eastHand_past = new Hand(new ArrayList<>());
+        eastHand_past.setPlayer(Player.EAST);
+        Hand southHand = new Hand(new ArrayList<>());
+        southHand.setPlayer(Player.SOUTH);
+        Hand westHand_past = new Hand(new ArrayList<>());
+        westHand_past.setPlayer(Player.WEST);
+        deal1.setHands(List.of(northHand_past, eastHand_past, southHand, westHand_past));
 
         List<Deal> mockDeals = List.of(deal1);
-        when(biddingService.getAllDeals()).thenReturn(mockDeals);
+        Mockito.when(bridgeBiddingService.getAllDeals()).thenReturn(mockDeals);
 
         // When & Then
         mockMvc.perform(get("/past-deals"))
@@ -288,13 +324,17 @@ public class BridgeBiddingControllerTest {
     void testCurrentDealPopup() throws Exception {
         // Given
         Deal mockDeal = new Deal();
-        Hand northHand = new Hand(Player.NORTH, new ArrayList<>());
-        Hand eastHand = new Hand(Player.EAST, new ArrayList<>());
-        Hand southHand = new Hand(Player.SOUTH, new ArrayList<>());
-        Hand westHand = new Hand(Player.WEST, new ArrayList<>());
+        Hand northHand = new Hand(new ArrayList<>());
+        northHand.setPlayer(Player.NORTH);
+        Hand eastHand = new Hand(new ArrayList<>());
+        eastHand.setPlayer(Player.EAST);
+        Hand southHand = new Hand(new ArrayList<>());
+        southHand.setPlayer(Player.SOUTH);
+        Hand westHand = new Hand(new ArrayList<>());
+        westHand.setPlayer(Player.WEST);
         mockDeal.setHands(List.of(northHand, eastHand, southHand, westHand));
 
-        when(biddingService.getCurrentDeal()).thenReturn(mockDeal);
+        Mockito.when(bridgeBiddingService.getCurrentDeal()).thenReturn(mockDeal);
 
         // When & Then
         mockMvc.perform(get("/current-deal-popup"))
