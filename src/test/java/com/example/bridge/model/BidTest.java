@@ -24,7 +24,7 @@ class BidTest {
         Bid b1 = new Bid(2, Card.Suit.HEARTS);
         Bid b2 = new Bid(2, Card.Suit.SPADES);
         Bid b3 = new Bid(3, Card.Suit.CLUBS);
-        Bid pass = new Bid();
+        Bid pass = Bid.pass();
         assertTrue(b2.compareTo(b1) > 0); // Spades > Hearts
         assertTrue(b3.compareTo(b2) > 0); // Level 3 > Level 2
         assertTrue(pass.compareTo(b1) < 0); // Pass < any bid

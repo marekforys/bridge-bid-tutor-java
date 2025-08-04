@@ -265,19 +265,96 @@
                                     <div onclick="selectSuit('DIAMONDS', '<span class=\'suit-red\'>&#9830;</span>')"
                                         class="suit-red">&#9830;</div>
                                     <div onclick="selectSuit('CLUBS', '&#9827;')" class="suit-black">&#9827;</div>
-                                    <div onclick="selectSuit('NOTRUMP', 'NT')">NT</div>
                                 </div>
-                                <input type="hidden" id="selectedSuit" name="suit" value="SPADES" />
-                            </div>
-                        </label>
-                        <button type="submit">Bid</button>
+                            </label>
+                            <button type="submit">Bid</button>
+                        </form>
+                        <form th:action="@{/make-bid}" method="post" style="display:inline;" th:if="${!biddingFinished and canDouble}">
+                            <input type="hidden" name="doubleBid" value="true" />
+                            <input type="hidden" name="biddingSystem" th:value="${biddingSystem}" />
+                            <input type="hidden" name="trainingMode" th:value="${trainingMode}" />
+                            <button type="submit">Double</button>
+                        </form>
+                        <form th:action="@{/make-bid}" method="post" style="display:inline;" th:if="${!biddingFinished and canRedouble}">
+                            <input type="hidden" name="redoubleBid" value="true" />
+                            <input type="hidden" name="biddingSystem" th:value="${biddingSystem}" />
+                            <input type="hidden" name="trainingMode" th:value="${trainingMode}" />
+                            <button type="submit">Redouble</button>
+                        </form>
                         <button type="submit" name="pass" value="true">Pass</button>
-                    </form>
+                    </div>
                 </div>
-            </div>
-            <div class="center-panel">
-                <div style="text-align:center; margin-bottom:10px;">
-                    <form th:action="@{/new-deal}" method="post" style="display:inline; margin-right:10px;">
+                <div class="center-panel">
+                    <div style="text-align:center; margin-bottom:10px;">
+                        <form th:action="@{/new-deal}" method="post" style="display:inline; margin-right:10px;">
+                            <input type="hidden" name="trainingMode" th:value="${trainingMode}" />
+                            <button type="submit">Start New Deal</button>
+                        </form>
+                        <button onclick="window.open('/current-deal-popup', 'CurrentDealPopup', 'width=600,height=600,scrollbars=yes')">Show
+                            Table in Popup</button>
+                    </div>
+                    <div style="text-align:center; font-weight:bold; margin-bottom:6px;">
+                        Dealer: <span th:text="${dealer}"></span>
+                    </div>
+                    <!-- Show hands according to training mode -->
+                    <div th:each="displayHand,iter : ${displayHands}">
+                        <h2 th:text="${displayHand.player.shortName}"></h2>
+                        <table class="current-deal-table">
+                            <tbody>
+                                <tr th:each="suit : ${suitsOrdered}">
+                                    <td style="text-align:left; background:transparent; padding:0;">
+                                        <span th:switch="${suit.name()}">
+                                        <span th:case="'CLUBS'"><span style="color:black">&#9827;</span></span>
+                                        <span th:case="'DIAMONDS'"><span style="color:red">&#9830;</span></span>
+                                        <span th:case="'HEARTS'"><span style="color:red">&#9829;</span></span>
+                                        <span th:case="'SPADES'"><span style="color:black">&#9824;</span></span>
+                                        </span>
+                                        <span
+                                            th:text="${displayHand.sortedCardsBySuitName[suit.name()] != null ? #strings.listJoin(displayHand.sortedCardsBySuitName[suit.name()], ' ') : ''}"></span>
+                                        </td>
+                                        </tr>
+                                        </tbody>
+                                        </table>
+                                        <div style="text-align:center; margin-top:8px; color:#fff; font-weight:bold;">
+                            Total points in hand: <span th:text="${displayHandPoints[iter.index]}"></span>
+                            </div>
+                    </div>
+                    <div class="bidding-history-center" style="margin-top:18px;">
+                        <table style="width:100%; margin-bottom:12px; background:transparent; border:none;">
+                            <thead>
+                                <tr>
+                                    <th th:classappend="${dealer == T(com.example.bridge.model.Player).NORTH} ? 'dealer' : ''" 
+                                        style="text-align:center;">N</th>
+                                    <th th:classappend="${dealer == T(com.example.bridge.model.Player).EAST} ? 'dealer' : ''" 
+                                        style="text-align:center;">E</th>
+                                    <th th:classappend="${dealer == T(com.example.bridge.model.Player).SOUTH} ? 'dealer' : ''" 
+                                        style="text-align:center;">S</th>
+                                    <th th:classappend="${dealer == T(com.example.bridge.model.Player).WEST} ? 'dealer' : ''" 
+                                        style="text-align:center;">W</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="round, rowStat : ${biddingRounds}">
+                                    <!-- North -->
+                                    <td th:class="${currentBidderIndex == 0 && rowStat.last ? 'current-bidder' : ''}" 
+                                        th:classappend="${dealer == T(com.example.bridge.model.Player).NORTH} ? 'dealer-col' : ''"
+                                        th:utext="${round[0]}"></td>
+                                    <!-- East -->
+                                    <td th:class="${currentBidderIndex == 1 && rowStat.last ? 'current-bidder' : ''}" 
+                                        th:classappend="${dealer == T(com.example.bridge.model.Player).EAST} ? 'dealer-col' : ''"
+                                        th:utext="${round[1]}"></td>
+                                    <!-- South -->
+                                    <td th:class="${currentBidderIndex == 2 && rowStat.last ? 'current-bidder' : ''}" 
+                                        th:classappend="${dealer == T(com.example.bridge.model.Player).SOUTH} ? 'dealer-col' : ''"
+                                        th:utext="${round[2]}"></td>
+                                    <!-- West -->
+                                    <td th:class="${currentBidderIndex == 3 && rowStat.last ? 'current-bidder' : ''}" 
+                                        th:classappend="${dealer == T(com.example.bridge.model.Player).WEST} ? 'dealer-col' : ''"
+                                        th:utext="${round[3]}"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                         <input type="hidden" name="trainingMode" th:value="${trainingMode}" />
                         <button type="submit">Start New Deal</button>
                     </form>

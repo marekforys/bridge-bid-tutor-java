@@ -1,6 +1,7 @@
 package com.example.bridge.model;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,7 +21,19 @@ public class Deal {
     @Enumerated(EnumType.STRING)
     private Player dealer;
 
+    private String contract;
+
     public Deal() {
+        this.bids = new ArrayList<>();
+    }
+
+    public Deal(Player dealer) {
+        this.dealer = dealer;
+        this.hands = new ArrayList<>();
+        this.bids = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            hands.add(new Hand(new ArrayList<>(), Player.values()[i]));
+        }
     }
 
     public Deal(List<Hand> hands, String biddingSystem) {
@@ -62,5 +75,21 @@ public class Deal {
 
     public void setDealer(Player dealer) {
         this.dealer = dealer;
+    }
+
+    public String getContract() {
+        return contract;
+    }
+
+    public void setContract(String contract) {
+        this.contract = contract;
+    }
+
+    public void addBid(Bid bid) {
+        if (this.bids == null) {
+            this.bids = new ArrayList<>();
+        }
+        this.bids.add(bid);
+        bid.setDeal(this);
     }
 }

@@ -28,6 +28,11 @@ public class Hand {
         this.cards = cards;
     }
 
+    public Hand(List<Card> cards, Player player) {
+        this.cards = cards;
+        this.player = player;
+    }
+
     public Long getId() {
         return id;
     }
@@ -112,5 +117,38 @@ public class Hand {
                 bySuit.getOrDefault(Card.Suit.DIAMONDS, Collections.emptyList()).size(),
                 bySuit.getOrDefault(Card.Suit.CLUBS, Collections.emptyList()).size()
         );
+    }
+
+    public Map<Card.Suit, Integer> getSuitLengths() {
+        if (cards == null) {
+            return java.util.Collections.emptyMap();
+        }
+        Map<Card.Suit, List<Card>> cardsBySuit = getCardsBySuit();
+        Map<Card.Suit, Integer> suitLengths = new java.util.EnumMap<>(Card.Suit.class);
+        for (Card.Suit suit : Card.Suit.values()) {
+            if (suit != Card.Suit.NOTRUMP) {
+                suitLengths.put(suit, cardsBySuit.getOrDefault(suit, java.util.Collections.emptyList()).size());
+            }
+        }
+        return suitLengths;
+    }
+
+    public boolean isBalanced() {
+        Map<Card.Suit, Integer> suitLengths = getSuitLengths();
+        int doubletons = 0;
+        int singletons = 0;
+        int voids = 0;
+
+        for (Integer length : suitLengths.values()) {
+            if (length == 2) {
+                doubletons++;
+            } else if (length == 1) {
+                singletons++;
+            } else if (length == 0) {
+                voids++;
+            }
+        }
+
+        return voids == 0 && singletons <= 1 && doubletons <= 2;
     }
 }

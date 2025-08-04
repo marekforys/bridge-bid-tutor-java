@@ -17,6 +17,6 @@ class CardTest {
     @Test
     void testToString() {
         Card card = new Card(Card.Suit.SPADES, Card.Rank.ACE);
-        assertEquals("A", card.toString());
+        assertEquals("AS", card.toString());
     }
 }
