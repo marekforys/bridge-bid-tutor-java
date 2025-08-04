@@ -255,6 +255,9 @@ public class BridgeBiddingService {
                     } else if (hcp >= 6 && hcp <= 9) { // 6-9 HCP with no fit, respond 1NT
                         logger.info("Responding 1NT with {} HCP and no fit", hcp);
                         finalBid = new Bid(1, Card.Suit.NOTRUMP);
+                    } else if (hcp >= 10 && hcp <= 12) { // 10-12 HCP with no fit, respond 2NT
+                        logger.info("Responding 2NT with {} HCP and no fit", hcp);
+                        finalBid = new Bid(2, Card.Suit.NOTRUMP);
                     } else {
                         logger.info("Opening longest suit with {} HCP", hcp);
                         finalBid = openLongestSuit(hand, suitLengths);
@@ -303,11 +306,36 @@ public class BridgeBiddingService {
         if (partnerBid.getLevel() == 1 && partnerBid.getSuit() == Card.Suit.NOTRUMP) {
             int hcp = hand.getHighCardPoints();
             Map<Card.Suit, Integer> suitLengths = hand.getSuitLengths();
-            if (hcp >= 8 && (suitLengths.getOrDefault(Card.Suit.HEARTS, 0) >= 4 || suitLengths.getOrDefault(Card.Suit.SPADES, 0) >= 4)) {
-                return new Bid(2, Card.Suit.CLUBS); // Stayman bid
+            boolean hasFourCardMajor = suitLengths.getOrDefault(Card.Suit.HEARTS, 0) >= 4 || suitLengths.getOrDefault(Card.Suit.SPADES, 0) >= 4;
+            
+            if (hasFourCardMajor) {
+                // Use Stayman with 9+ HCP, or 8 HCP with unbalanced hand, or 8 HCP with strong major suit honors
+                if (hcp >= 9 || (hcp == 8 && !hand.isBalanced()) || (hcp == 8 && hasStrongMajorSuit(hand))) {
+                    return new Bid(2, Card.Suit.CLUBS); // Stayman bid
+                }
             }
         }
         return null;
+    }
+
+    private boolean hasStrongMajorSuit(Hand hand) {
+        Map<Card.Suit, Integer> suitLengths = hand.getSuitLengths();
+        List<Card> allCards = hand.getCards();
+
+        for (Card.Suit suit : new Card.Suit[]{Card.Suit.HEARTS, Card.Suit.SPADES}) {
+            if (suitLengths.getOrDefault(suit, 0) >= 4) {
+                int strongCards = 0;
+                for (Card card : allCards) {
+                    if (card.getSuit() == suit && (card.getRank() == Card.Rank.ACE || card.getRank() == Card.Rank.KING || card.getRank() == Card.Rank.QUEEN)) {
+                        strongCards++;
+                    }
+                }
+                if (strongCards >= 2) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private boolean isOpeningBid(List<Bid> biddingHistory) {

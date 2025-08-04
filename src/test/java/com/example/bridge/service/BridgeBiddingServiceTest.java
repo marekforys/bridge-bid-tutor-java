@@ -311,16 +311,22 @@ class BridgeBiddingServiceTest {
 
     @Test
     void testResponse2NTWith10to12HCP() {
-        // Partner opens 1C, responder has 11 HCP, no fit
+        // Partner opens 1C, responder has 11 HCP, no fit (only 3 clubs)
         List<Card> cards = new ArrayList<>();
         // 11 HCP: A, K, Q, J
         cards.add(new Card(Card.Suit.HEARTS, Card.Rank.ACE)); // 4
-        cards.add(new Card(Card.Suit.SPADES, Card.Rank.KING)); // 3
-        cards.add(new Card(Card.Suit.DIAMONDS, Card.Rank.QUEEN)); // 2
-        cards.add(new Card(Card.Suit.CLUBS, Card.Rank.JACK)); // 1
-        for (int i = 0; i < 9; i++) {
-            cards.add(new Card(Card.Suit.CLUBS, Card.Rank.TWO));
-        }
+        cards.add(new Card(Card.Suit.HEARTS, Card.Rank.KING)); // 3
+        cards.add(new Card(Card.Suit.HEARTS, Card.Rank.QUEEN)); // 2
+        cards.add(new Card(Card.Suit.HEARTS, Card.Rank.JACK)); // 1
+        cards.add(new Card(Card.Suit.HEARTS, Card.Rank.TEN)); // 1 more HCP
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.NINE));
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.EIGHT));
+        cards.add(new Card(Card.Suit.SPADES, Card.Rank.SEVEN));
+        cards.add(new Card(Card.Suit.DIAMONDS, Card.Rank.SIX));
+        cards.add(new Card(Card.Suit.DIAMONDS, Card.Rank.FIVE));
+        cards.add(new Card(Card.Suit.DIAMONDS, Card.Rank.FOUR));
+        cards.add(new Card(Card.Suit.CLUBS, Card.Rank.THREE));
+        cards.add(new Card(Card.Suit.CLUBS, Card.Rank.TWO));
         Hand hand = new Hand(cards);
         hand.setPlayer(Player.SOUTH);
         // Bidding: N: 1C
@@ -329,6 +335,7 @@ class BridgeBiddingServiceTest {
         openBid.setPlayer(Player.NORTH);
         history.add(openBid);
         service.getCurrentDeal().getHands().set(2, hand);
+        service.setCurrentBidderIndex(2); // Set current bidder to South
         Bid bid = service.getSimpleNaturalBid(history);
         assertFalse(bid.isPass(), "Should not pass with 11 HCP");
         assertEquals(2, bid.getLevel(), "Should respond at 2-level");
@@ -356,6 +363,7 @@ class BridgeBiddingServiceTest {
         openBid.setPlayer(Player.NORTH);
         history.add(openBid);
         service.getCurrentDeal().getHands().set(2, hand);
+        service.setCurrentBidderIndex(2); // Set current bidder to South
         Bid bid = service.getSimpleNaturalBid(history);
         // With 5 HCP and 5-card support, we should raise to 2H
         assertFalse(bid.isPass(), "Should not pass with 5 HCP and fit");
