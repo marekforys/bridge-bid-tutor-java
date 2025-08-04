@@ -146,9 +146,25 @@ public class BridgeBiddingService {
         if (!lastStandardBid.isDouble()) {
             return false;
         }
-        Player lastDoubler = lastStandardBid.getPlayer();
+        
+        // Find the original bid that was doubled (the bid before the double)
+        Bid originalBid = null;
+        for (int i = biddingHistory.size() - 2; i >= 0; i--) {
+            Bid bid = biddingHistory.get(i);
+            if (!bid.isPass()) {
+                originalBid = bid;
+                break;
+            }
+        }
+        
+        if (originalBid == null || originalBid.isDouble() || originalBid.isRedouble()) {
+            return false;
+        }
+        
+        // Only the partner of the original bidder can redouble
+        Player originalBidder = originalBid.getPlayer();
         Player currentBidder = getCurrentBidder();
-        return !lastDoubler.isOpponent(currentBidder);
+        return originalBidder.getPartner() == currentBidder;
     }
 
     public boolean isBiddingFinished() {
@@ -226,9 +242,21 @@ public class BridgeBiddingService {
                     }
                 } else if (partnerBid.isStandard()) {
                     Card.Suit partnerSuit = partnerBid.getSuit();
-                    if (suitLengths.getOrDefault(partnerSuit, 0) >= 3 && hcp >= 5) { // Changed from 6 to 5 to pass test
+                    int partnerSuitLength = suitLengths.getOrDefault(partnerSuit, 0);
+                    logger.info("Partner bid: {} {}, HCP: {}, Partner suit length: {}", partnerBid.getLevel(), partnerSuit, hcp, partnerSuitLength);
+                    
+                    // For major suits, need 3+ cards; for minor suits, need 4+ cards to raise
+                    boolean hasGoodSupport = (partnerSuit == Card.Suit.HEARTS || partnerSuit == Card.Suit.SPADES) 
+                        ? partnerSuitLength >= 3 : partnerSuitLength >= 4;
+                    
+                    if (hasGoodSupport && hcp >= 5) { // Support partner with good fit
+                        logger.info("Supporting partner's suit with {} cards", partnerSuitLength);
                         finalBid = new Bid(partnerBid.getLevel() + 1, partnerSuit);
+                    } else if (hcp >= 6 && hcp <= 9) { // 6-9 HCP with no fit, respond 1NT
+                        logger.info("Responding 1NT with {} HCP and no fit", hcp);
+                        finalBid = new Bid(1, Card.Suit.NOTRUMP);
                     } else {
+                        logger.info("Opening longest suit with {} HCP", hcp);
                         finalBid = openLongestSuit(hand, suitLengths);
                     }
                 }

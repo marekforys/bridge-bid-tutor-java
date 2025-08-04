@@ -302,6 +302,7 @@ class BridgeBiddingServiceTest {
         openBid.setPlayer(Player.NORTH);
         history.add(openBid);
         service.getCurrentDeal().getHands().set(2, hand);
+        service.setCurrentBidderIndex(2); // Set current bidder to South
         Bid bid = service.getSimpleNaturalBid(history);
         assertFalse(bid.isPass(), "Should not pass with 7 HCP");
         assertEquals(1, bid.getLevel(), "Should respond at 1-level");
