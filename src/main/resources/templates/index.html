@@ -3,88 +3,303 @@
 
 <head>
     <title>Bridge Bidding Tutor</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #228B22;
+        * {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            box-sizing: border-box;
         }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f4c3a 0%, #1a5c4a 50%, #0f4c3a 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+        
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 12px;
+            padding: 0 2rem;
         }
-        .main-flex {
-            display: flex;
-            flex-direction: row;
-            gap: 40px;
-            justify-content: center;
-            align-items: flex-start;
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 2rem;
+            align-items: start;
         }
-        .left-panel {
-            min-width: 350px;
-            max-width: 400px;
+        
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
-        .right-panel {
-            flex: 1;
+        
+        .game-area {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
         }
-        h1, h2 {
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
             text-align: center;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #ffffff 0%, #e0f2e7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        .centered {
-            text-align: center;
+        
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #ffffff;
         }
-        table {
-            background-color: #228B22;
-            border-spacing: 40px 30px;
+        
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            color: #e0f2e7;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        .bridge-table {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
             margin: 0 auto;
+            max-width: 600px;
+            position: relative;
         }
-        td {
-            background-color: #228B22;
-            padding: 30px 40px;
-            font-size: 1.5em;
+        
+        .bridge-table table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        .bridge-table td {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
             vertical-align: top;
+            position: relative;
+        }
+        
+        .bridge-table td:first-child {
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .bridge-table td:last-child {
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .hand-display {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .suit-line {
+            margin: 0.25rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+        }
+        
+        .bidding-controls {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .bidding-history {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .bidding-history table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 2px;
+        }
+        
+        .bidding-history th,
+        .bidding-history td {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.75rem 0.5rem;
             text-align: center;
+            border-radius: 6px;
         }
-        .nowrap-cards {
-            white-space: nowrap;
+        
+        .bidding-history th {
+            background: rgba(255, 255, 255, 0.15);
+            font-weight: 600;
+            font-size: 0.9rem;
         }
-        .bidding-section {
-            background: #fff3;
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #e0f2e7;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 8px;
-            padding: 20px 30px 20px 30px;
-            box-shadow: 0 2px 8px #0002;
+            color: #ffffff;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
         }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #4ade80;
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            border: none;
+            border-radius: 8px;
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #475569 0%, #334155 100%);
+            box-shadow: 0 4px 12px rgba(71, 85, 105, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+        }
+        
         .custom-dropdown {
             position: relative;
             display: inline-block;
-            width: 80px;
+            width: 100px;
         }
+        
         .dropdown-selected {
-            background: #fff;
-            border: 1px solid #888;
-            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
             cursor: pointer;
-            min-width: 60px;
-            text-align: left;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
         }
+        
+        .dropdown-selected:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #4ade80;
+        }
+        
         .dropdown-items {
             display: none;
             position: absolute;
-            background: #fff;
-            border: 1px solid #888;
-            z-index: 10;
-            min-width: 60px;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            z-index: 1000;
+            margin-top: 4px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
+        
         .dropdown-items div {
-            padding: 6px 10px;
+            padding: 0.75rem 1rem;
             cursor: pointer;
+            color: #1f2937;
+            transition: background-color 0.2s ease;
         }
+        
         .dropdown-items div:hover {
-            background: #eee;
+            background: rgba(74, 222, 128, 0.1);
+        }
+        
+        .dropdown-items div:first-child {
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .dropdown-items div:last-child {
+            border-radius: 0 0 8px 8px;
         }
         
         /* Dealer and current bidder highlighting */
@@ -95,57 +310,131 @@
         .dealer::after {
             content: "D";
             position: absolute;
-            top: -15px;
-            right: 5px;
+            top: -8px;
+            right: -8px;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 10px;
-            color: #ff0;
-            font-weight: bold;
-            text-shadow: 1px 1px 1px #000;
+            font-weight: 700;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.4);
         }
         
         .dealer-col {
-            border-left: 2px solid #ff0 !important;
-            border-right: 2px solid #ff0 !important;
+            border: 2px solid #fbbf24 !important;
+            box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.3) !important;
         }
         
         .current-bidder {
-            background-color: rgba(255, 255, 0, 0.2) !important;
-            font-weight: bold;
+            background: linear-gradient(135deg, rgba(74, 222, 128, 0.2) 0%, rgba(34, 197, 94, 0.2) 100%) !important;
+            border: 2px solid #4ade80 !important;
+            font-weight: 600;
+            box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.3) !important;
         }
-        .suit-red { color: red; }
-        .suit-black { color: black; }
-        ul { list-style: none; padding: 0; }
-        form { margin: 0; }
-        button { font-size: 1em; margin-top: 10px; }
-        table.current-deal-table {
-            background-color: #228B22;
-            border-spacing: 1px 0;
-            margin: 0 auto;
-            font-size: 0.95em;
-            max-width: 98vw;
-            width: auto;
-            table-layout: auto;
+        .suit-red { 
+            color: #ef4444; 
+            font-weight: 600;
         }
-        table.current-deal-table td {
-            background-color: #228B22;
-            padding: 0 2px 0 2px;
-            font-size: 1em;
-            vertical-align: middle;
+        
+        .suit-black { 
+            color: #1f2937; 
+            font-weight: 600;
+        }
+        
+        .suit-symbol {
+            font-size: 1.1em;
+            margin-right: 0.25rem;
+        }
+        
+        .card-display {
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.05em;
+        }
+        
+        .points-display {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
             text-align: center;
+            font-weight: 600;
+            color: #4ade80;
+            margin-top: 0.5rem;
         }
-        .card-row-scroll {
-            max-width: 160px;
-            overflow-x: auto;
-            white-space: nowrap;
-            display: block;
+        
+        .status-message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-weight: 500;
         }
-        .card-span {
-            margin-right: 1px;
+        
+        .status-success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #4ade80;
         }
-        .deal-table-scroll-wrap {
-            max-width: 99vw;
-            overflow-x: auto;
-            margin: 0 auto;
+        
+        .status-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+        
+        .status-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #60a5fa;
+        }
+        
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        
+        .player-badge {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .card,
+            .game-area {
+                padding: 1rem;
+            }
+            
+            .bridge-table {
+                padding: 1rem;
+            }
         }
     </style>
     <script>
@@ -177,7 +466,9 @@
                 var selectedSuit = suitInput.value;
                 var suitOrder = ['CLUBS', 'DIAMONDS', 'HEARTS', 'SPADES', 'NOTRUMP'];
                 var isLegal = true;
-                if (highestLevel !== null && highestSuit !== null) {
+                
+                // If there's a previous bid, validate against it
+                if (highestLevel !== null && highestSuit !== 'null') {
                     if (selectedLevel < highestLevel) {
                         isLegal = false;
                     } else if (selectedLevel === highestLevel) {
@@ -186,6 +477,8 @@
                         }
                     }
                 }
+                // If there's no previous bid, any valid bid is legal
+                
                 bidButton.disabled = !isLegal;
             }
             document.addEventListener('DOMContentLoaded', function () {
@@ -209,29 +502,35 @@
 </head>
 
 <body>
+    <div class="header">
+        <div class="container">
+            <h1>Bridge Bidding Tutor</h1>
+        </div>
+    </div>
+    
     <div class="container">
-        <h1>Bridge Bidding Tutor</h1>
-        <div class="main-flex" style="justify-content:space-between;">
-            <div class="left-panel">
-                <h2>Bidding</h2>
-                <div style="margin-bottom: 18px; font-weight:bold; color:#fff;">
-                    You are playing: <span th:text="${userSeat.shortName}"></span>
+        <div class="main-grid">
+            <!-- Left Panel: Controls and Information -->
+            <div class="card">
+                <div class="player-info">
+                    <span class="player-badge" th:text="${userSeat.shortName}">You</span>
+                    <span>You are playing as</span>
                 </div>
-                <div style="margin-bottom: 18px;">
-                    <form id="trainingModeForm" th:action="@{/}" method="get" style="display:inline; margin-bottom:10px;">
-                        <label for="trainingMode" style="font-weight:bold;">Training Mode:</label>
-                        <select id="trainingMode" name="trainingMode" style="margin-left:10px;"
+                <div class="form-group">
+                    <label class="form-label" for="trainingMode">Training Mode</label>
+                    <form id="trainingModeForm" th:action="@{/}" method="get">
+                        <select id="trainingMode" name="trainingMode" class="form-control"
                             onchange="document.getElementById('trainingModeForm').submit();">
                             <option value="single" th:selected="${trainingMode == 'single'}">Single hand</option>
                             <option value="pair" th:selected="${trainingMode == 'pair'}">Pair</option>
                             <option value="all" th:selected="${trainingMode == 'all'}">All hands</option>
                         </select>
                     </form>
-                    </div>
-                    <div style="margin-bottom: 18px;">
-                    <form id="biddingSystemForm" th:action="@{/}" method="get" style="display:inline;">
-                        <label for="biddingSystem" style="font-weight:bold;">Bidding System:</label>
-                        <select id="biddingSystem" name="biddingSystem" style="margin-left:10px;"
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="biddingSystem">Bidding System</label>
+                    <form id="biddingSystemForm" th:action="@{/}" method="get">
+                        <select id="biddingSystem" name="biddingSystem" class="form-control"
                             onchange="document.getElementById('biddingSystemForm').submit();">
                             <option value="natural" th:selected="${biddingSystem == 'natural'}">Natural</option>
                             <option value="polish" th:selected="${biddingSystem == 'polish'}">Polish Club</option>
@@ -239,199 +538,133 @@
                         </select>
                     </form>
                 </div>
-                <div class="bidding-section">
-                    <div style="font-weight:bold; margin-bottom:10px;">Current Bidder: <span th:text="${currentBidder}"></span>
+                <div class="bidding-controls">
+                    <h3>Bidding Controls</h3>
+                    <div class="status-info">
+                        <strong>Current Bidder:</strong> <span th:text="${currentBidder}"></span>
                     </div>
-                    <div id="bidErrorDiv" th:if="${bidError}" style="color:red; font-weight:bold; margin-bottom:10px; display:block;"
+                    <div id="bidErrorDiv" th:if="${bidError}" class="status-message status-error"
                         th:text="${bidError}"></div>
-                    <div th:if="${biddingFinished}" style="color:green; font-weight:bold; margin-bottom:10px;">Bidding is
-                        finished.</div>
+                    <div th:if="${biddingFinished}" class="status-message status-success">Bidding is finished.</div>
                     <form th:if="${!biddingFinished}" th:action="@{/make-bid}" method="post"
-                        onsubmit="if(document.querySelector('form button[type=submit]:not([name=pass])').disabled){showBidError('Bid must be higher than previous bids.');return false;}else{return true;}">
+                        onsubmit="var bidButton = document.querySelector('form button[type=submit]:not([name=pass])'); if(bidButton.disabled){showBidError('Bid must be higher than previous bids.');return false;}else{return true;}">
                         <input type="hidden" name="biddingSystem" th:value="${biddingSystem}" />
                         <input type="hidden" name="trainingMode" th:value="${trainingMode}" />
-                        <label>Level:
-                            <select name="level">
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="level">Level</label>
+                            <select name="level" id="level" class="form-control">
                                 <option th:each="i : ${#numbers.sequence(1,7)}" th:value="${i}" th:text="${i}"></option>
                             </select>
-                        </label>
-                        <label>Suit:
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Suit</label>
                             <div class="custom-dropdown">
-                                <div id="dropdown-selected" class="dropdown-selected" onclick="toggleDropdown()">&#9824;</div>
-                                <div id="dropdown-items" class="dropdown-items">
-                                    <div onclick="selectSuit('SPADES', '&#9824;')" class="suit-black">&#9824;</div>
-                                    <div onclick="selectSuit('HEARTS', '<span class=\'suit-red\'>&#9829;</span>')"
-                                        class="suit-red">&#9829;</div>
-                                    <div onclick="selectSuit('DIAMONDS', '<span class=\'suit-red\'>&#9830;</span>')"
-                                        class="suit-red">&#9830;</div>
-                                    <div onclick="selectSuit('CLUBS', '&#9827;')" class="suit-black">&#9827;</div>
+                                <div id="dropdown-selected" class="dropdown-selected" onclick="toggleDropdown()">
+                                    <span class="suit-symbol">♠</span>
+                                    <span>↓</span>
                                 </div>
-                            </label>
-                            <button type="submit">Bid</button>
-                        </form>
-                        <form th:action="@{/make-bid}" method="post" style="display:inline;" th:if="${!biddingFinished and canDouble}">
+                                <div id="dropdown-items" class="dropdown-items">
+                                    <div onclick="selectSuit('SPADES', '♠')" class="suit-black">♠ Spades</div>
+                                    <div onclick="selectSuit('HEARTS', '♥')" class="suit-red">♥ Hearts</div>
+                                    <div onclick="selectSuit('DIAMONDS', '♦')" class="suit-red">♦ Diamonds</div>
+                                    <div onclick="selectSuit('CLUBS', '♣')" class="suit-black">♣ Clubs</div>
+                                    <div onclick="selectSuit('NOTRUMP', 'NT')">NT No Trump</div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="selectedSuit" name="suit" value="SPADES" />
+                        </div>
+                        
+                        <button type="submit" class="btn">Make Bid</button>
+                    </form>
+                    
+                    <div th:if="${!biddingFinished}" style="display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;">
+                        <form th:action="@{/make-bid}" method="post" th:if="${canDouble}" style="display: inline;">
                             <input type="hidden" name="doubleBid" value="true" />
                             <input type="hidden" name="biddingSystem" th:value="${biddingSystem}" />
                             <input type="hidden" name="trainingMode" th:value="${trainingMode}" />
-                            <button type="submit">Double</button>
+                            <button type="submit" class="btn btn-danger">Double</button>
                         </form>
-                        <form th:action="@{/make-bid}" method="post" style="display:inline;" th:if="${!biddingFinished and canRedouble}">
+                        
+                        <form th:action="@{/make-bid}" method="post" th:if="${canRedouble}" style="display: inline;">
                             <input type="hidden" name="redoubleBid" value="true" />
                             <input type="hidden" name="biddingSystem" th:value="${biddingSystem}" />
                             <input type="hidden" name="trainingMode" th:value="${trainingMode}" />
-                            <button type="submit">Redouble</button>
+                            <button type="submit" class="btn btn-danger">Redouble</button>
                         </form>
-                        <button type="submit" name="pass" value="true">Pass</button>
-                    </div>
-                </div>
-                <div class="center-panel">
-                    <div style="text-align:center; margin-bottom:10px;">
-                        <form th:action="@{/new-deal}" method="post" style="display:inline; margin-right:10px;">
+                        
+                        <form th:action="@{/make-bid}" method="post" style="display: inline;">
+                            <input type="hidden" name="biddingSystem" th:value="${biddingSystem}" />
                             <input type="hidden" name="trainingMode" th:value="${trainingMode}" />
-                            <button type="submit">Start New Deal</button>
+                            <button type="submit" name="pass" value="true" class="btn btn-secondary">Pass</button>
                         </form>
-                        <button onclick="window.open('/current-deal-popup', 'CurrentDealPopup', 'width=600,height=600,scrollbars=yes')">Show
-                            Table in Popup</button>
                     </div>
-                    <div style="text-align:center; font-weight:bold; margin-bottom:6px;">
-                        Dealer: <span th:text="${dealer}"></span>
                     </div>
-                    <!-- Show hands according to training mode -->
-                    <div th:each="displayHand,iter : ${displayHands}">
-                        <h2 th:text="${displayHand.player.shortName}"></h2>
-                        <table class="current-deal-table">
-                            <tbody>
-                                <tr th:each="suit : ${suitsOrdered}">
-                                    <td style="text-align:left; background:transparent; padding:0;">
-                                        <span th:switch="${suit.name()}">
-                                        <span th:case="'CLUBS'"><span style="color:black">&#9827;</span></span>
-                                        <span th:case="'DIAMONDS'"><span style="color:red">&#9830;</span></span>
-                                        <span th:case="'HEARTS'"><span style="color:red">&#9829;</span></span>
-                                        <span th:case="'SPADES'"><span style="color:black">&#9824;</span></span>
-                                        </span>
-                                        <span
-                                            th:text="${displayHand.sortedCardsBySuitName[suit.name()] != null ? #strings.listJoin(displayHand.sortedCardsBySuitName[suit.name()], ' ') : ''}"></span>
-                                        </td>
-                                        </tr>
-                                        </tbody>
-                                        </table>
-                                        <div style="text-align:center; margin-top:8px; color:#fff; font-weight:bold;">
-                            Total points in hand: <span th:text="${displayHandPoints[iter.index]}"></span>
-                            </div>
-                    </div>
-                    <div class="bidding-history-center" style="margin-top:18px;">
-                        <table style="width:100%; margin-bottom:12px; background:transparent; border:none;">
-                            <thead>
-                                <tr>
-                                    <th th:classappend="${dealer == T(com.example.bridge.model.Player).NORTH} ? 'dealer' : ''" 
-                                        style="text-align:center;">N</th>
-                                    <th th:classappend="${dealer == T(com.example.bridge.model.Player).EAST} ? 'dealer' : ''" 
-                                        style="text-align:center;">E</th>
-                                    <th th:classappend="${dealer == T(com.example.bridge.model.Player).SOUTH} ? 'dealer' : ''" 
-                                        style="text-align:center;">S</th>
-                                    <th th:classappend="${dealer == T(com.example.bridge.model.Player).WEST} ? 'dealer' : ''" 
-                                        style="text-align:center;">W</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="round, rowStat : ${biddingRounds}">
-                                    <!-- North -->
-                                    <td th:class="${currentBidderIndex == 0 && rowStat.last ? 'current-bidder' : ''}" 
-                                        th:classappend="${dealer == T(com.example.bridge.model.Player).NORTH} ? 'dealer-col' : ''"
-                                        th:utext="${round[0]}"></td>
-                                    <!-- East -->
-                                    <td th:class="${currentBidderIndex == 1 && rowStat.last ? 'current-bidder' : ''}" 
-                                        th:classappend="${dealer == T(com.example.bridge.model.Player).EAST} ? 'dealer-col' : ''"
-                                        th:utext="${round[1]}"></td>
-                                    <!-- South -->
-                                    <td th:class="${currentBidderIndex == 2 && rowStat.last ? 'current-bidder' : ''}" 
-                                        th:classappend="${dealer == T(com.example.bridge.model.Player).SOUTH} ? 'dealer-col' : ''"
-                                        th:utext="${round[2]}"></td>
-                                    <!-- West -->
-                                    <td th:class="${currentBidderIndex == 3 && rowStat.last ? 'current-bidder' : ''}" 
-                                        th:classappend="${dealer == T(com.example.bridge.model.Player).WEST} ? 'dealer-col' : ''"
-                                        th:utext="${round[3]}"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                        <input type="hidden" name="trainingMode" th:value="${trainingMode}" />
-                        <button type="submit">Start New Deal</button>
-                    </form>
-                    <button onclick="window.open('/current-deal-popup', 'CurrentDealPopup', 'width=600,height=600,scrollbars=yes')">Show
-                        Table in Popup</button>
                 </div>
-                <div style="text-align:center; font-weight:bold; margin-bottom:6px;">
-                    Dealer: <span th:text="${dealer}"></span>
+            <!-- Right Panel: Game Area -->
+            <div class="game-area">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <div class="status-info" style="margin: 0;">
+                        <strong>Dealer:</strong> <span th:text="${dealer}"></span>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <form th:action="@{/new-deal}" method="post" style="display: inline;">
+                            <input type="hidden" name="trainingMode" th:value="${trainingMode}" />
+                            <button type="submit" class="btn">New Deal</button>
+                        </form>
+                        <button onclick="window.open('/current-deal-popup', 'CurrentDealPopup', 'width=600,height=600,scrollbars=yes')" class="btn btn-secondary">Show Popup</button>
+                    </div>
                 </div>
-                <!-- Show hands according to training mode -->
-                <div th:each="displayHand,iter : ${displayHands}">
-                    <h2 th:text="${displayHand.player.shortName}"></h2>
-                    <table class="current-deal-table">
-                        <tbody>
-                            <tr th:each="suit : ${suitsOrdered}">
-                                <td style="text-align:left; background:transparent; padding:0;">
-                                    <span th:switch="${suit.name()}">
-                                    <span th:case="'CLUBS'"><span style="color:black">&#9827;</span></span>
-                                    <span th:case="'DIAMONDS'"><span style="color:red">&#9830;</span></span>
-                                    <span th:case="'HEARTS'"><span style="color:red">&#9829;</span></span>
-                                    <span th:case="'SPADES'"><span style="color:black">&#9824;</span></span>
-                                    </span>
-                                    <span
-                                        th:text="${displayHand.sortedCardsBySuitName[suit.name()] != null ? #strings.listJoin(displayHand.sortedCardsBySuitName[suit.name()], ' ') : ''}"></span>
-                                    </td>
-                                    </tr>
-                                    </tbody>
-                                    </table>
-                                    <div style="text-align:center; margin-top:8px; color:#fff; font-weight:bold;">
-                        Total points in hand: <span th:text="${displayHandPoints[iter.index]}"></span>
+                <!-- Hands Display -->
+                <div th:each="displayHand,iter : ${displayHands}" class="hand-display">
+                    <h3 th:text="${displayHand.player.shortName}"></h3>
+                    <div class="card-display">
+                        <div th:each="suit : ${suitsOrdered}" class="suit-line">
+                            <span th:switch="${suit.name()}" class="suit-symbol">
+                                <span th:case="'CLUBS'" class="suit-black">♣</span>
+                                <span th:case="'DIAMONDS'" class="suit-red">♦</span>
+                                <span th:case="'HEARTS'" class="suit-red">♥</span>
+                                <span th:case="'SPADES'" class="suit-black">♠</span>
+                            </span>
+                            <span th:text="${handRanksBySuit[suit.name()] != null ? #strings.listJoin(handRanksBySuit[suit.name()], ' ') : '-'}"></span>
                         </div>
+                    </div>
+                    <div class="points-display">
+                        <strong>HCP:</strong> <span th:text="${displayHandPoints[iter.index]}"></span>
+                    </div>
                 </div>
-                <div class="bidding-history-center" style="margin-top:18px;">
-                    <table style="width:100%; margin-bottom:12px; background:transparent; border:none;">
+                <div class="bidding-history">
+                    <h3>Bidding History</h3>
+                    <table>
                         <thead>
                             <tr>
-                                <th th:classappend="${dealer == T(com.example.bridge.model.Player).NORTH} ? 'dealer' : ''" 
-                                    style="text-align:center;">N</th>
-                                <th th:classappend="${dealer == T(com.example.bridge.model.Player).EAST} ? 'dealer' : ''" 
-                                    style="text-align:center;">E</th>
-                                <th th:classappend="${dealer == T(com.example.bridge.model.Player).SOUTH} ? 'dealer' : ''" 
-                                    style="text-align:center;">S</th>
-                                <th th:classappend="${dealer == T(com.example.bridge.model.Player).WEST} ? 'dealer' : ''" 
-                                    style="text-align:center;">W</th>
+                                <th th:classappend="${dealer == T(com.example.bridge.model.Player).NORTH} ? 'dealer' : ''">N</th>
+                                <th th:classappend="${dealer == T(com.example.bridge.model.Player).EAST} ? 'dealer' : ''">E</th>
+                                <th th:classappend="${dealer == T(com.example.bridge.model.Player).SOUTH} ? 'dealer' : ''">S</th>
+                                <th th:classappend="${dealer == T(com.example.bridge.model.Player).WEST} ? 'dealer' : ''">W</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:each="round, rowStat : ${biddingRounds}">
-                                <!-- North -->
                                 <td th:class="${currentBidderIndex == 0 && rowStat.last ? 'current-bidder' : ''}" 
-                                    th:classappend="${dealer == T(com.example.bridge.model.Player).NORTH} ? 'dealer-col' : ''"
+                                    th:classappend="${dealer == T(com.example.bridge.model.Player).NORTH ? 'dealer-col' : ''}"
                                     th:utext="${round[0]}"></td>
-                                <!-- East -->
                                 <td th:class="${currentBidderIndex == 1 && rowStat.last ? 'current-bidder' : ''}" 
-                                    th:classappend="${dealer == T(com.example.bridge.model.Player).EAST} ? 'dealer-col' : ''"
+                                    th:classappend="${dealer == T(com.example.bridge.model.Player).EAST ? 'dealer-col' : ''}"
                                     th:utext="${round[1]}"></td>
-                                <!-- South -->
                                 <td th:class="${currentBidderIndex == 2 && rowStat.last ? 'current-bidder' : ''}" 
-                                    th:classappend="${dealer == T(com.example.bridge.model.Player).SOUTH} ? 'dealer-col' : ''"
+                                    th:classappend="${dealer == T(com.example.bridge.model.Player).SOUTH ? 'dealer-col' : ''}"
                                     th:utext="${round[2]}"></td>
-                                <!-- West -->
                                 <td th:class="${currentBidderIndex == 3 && rowStat.last ? 'current-bidder' : ''}" 
-                                    th:classappend="${dealer == T(com.example.bridge.model.Player).WEST} ? 'dealer-col' : ''"
+                                    th:classappend="${dealer == T(com.example.bridge.model.Player).WEST ? 'dealer-col' : ''}"
                                     th:utext="${round[3]}"></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-            <div class="right-panel">
-                <div style="margin-bottom:30px; text-align:center;">
-                    <button onclick="window.open('/past-deals', 'PastDealsPopup', 'width=600,height=600,scrollbars=yes')">Show Past
-                        Deals</button>
-                </div>
-            </div>
         </div>
-        </div>
+    </div>
 </body>
-
 </html>

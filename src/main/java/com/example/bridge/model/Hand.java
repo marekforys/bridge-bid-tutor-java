@@ -72,6 +72,18 @@ public class Hand {
                                         .collect(Collectors.toList()))));
     }
 
+    public Map<String, List<String>> getSortedRankNamesBySuit() {
+        return cards.stream()
+                .collect(Collectors.groupingBy(
+                        card -> card.getSuit().name(),
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                list -> list.stream()
+                                        .sorted((c1, c2) -> c2.getRank().ordinal() - c1.getRank().ordinal())
+                                        .map(card -> card.getRank().getShortName())
+                                        .collect(Collectors.toList()))));
+    }
+
     public Player getPlayer() {
         return player;
     }

@@ -258,6 +258,9 @@ public class BridgeBiddingService {
                     } else if (hcp >= 10 && hcp <= 12) { // 10-12 HCP with no fit, respond 2NT
                         logger.info("Responding 2NT with {} HCP and no fit", hcp);
                         finalBid = new Bid(2, Card.Suit.NOTRUMP);
+                    } else if (hcp < 6) { // Weak hands should pass
+                        logger.info("Passing with weak hand ({} HCP) when responding to partner bid", hcp);
+                        finalBid = Bid.pass();
                     } else {
                         logger.info("Opening longest suit with {} HCP", hcp);
                         finalBid = openLongestSuit(hand, suitLengths);

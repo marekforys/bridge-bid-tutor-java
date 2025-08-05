@@ -61,6 +61,7 @@ public class BridgeBiddingController {
         model.addAttribute("hand", hand);
         model.addAttribute("handIndex", currentBidderIndex);
         model.addAttribute("handBySuit", hand.getSortedCardsBySuitName());
+        model.addAttribute("handRanksBySuit", hand.getSortedRankNamesBySuit());
         int totalPoints = 0;
         if (hand.getCards() != null) {
             for (Card card : hand.getCards()) {
@@ -299,10 +300,13 @@ public class BridgeBiddingController {
         }
         model.addAttribute("deal", deal);
         List<Map<String, List<Card>>> handsBySuit = new java.util.ArrayList<>();
+        List<Map<String, List<String>>> handsRanksBySuit = new java.util.ArrayList<>();
         for (Hand h : deal.getHands()) {
             handsBySuit.add(h.getSortedCardsBySuitName());
+            handsRanksBySuit.add(h.getSortedRankNamesBySuit());
         }
         model.addAttribute("handsBySuit", handsBySuit);
+        model.addAttribute("handsRanksBySuit", handsRanksBySuit);
         model.addAttribute("suitsOrdered", java.util.List.of(
             com.example.bridge.model.Card.Suit.SPADES,
             com.example.bridge.model.Card.Suit.HEARTS,
@@ -347,6 +351,15 @@ public class BridgeBiddingController {
             return "-";
         if (bid.isPass())
             return "Pass";
+        if (bid.isDouble())
+            return "Double";
+        if (bid.isRedouble())
+            return "Redouble";
+        
+        // Handle standard bids with suits
+        if (bid.getSuit() == null)
+            return "Unknown";
+            
         String suitIcon;
         switch (bid.getSuit()) {
             case SPADES:
