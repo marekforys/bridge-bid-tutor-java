@@ -74,6 +74,25 @@ class BridgeBiddingServiceTest {
     }
 
     @Test
+    void testBidLevelValidation() {
+        // Test that level 8 bid is not allowed
+        Bid illegalBid = new Bid(8, Card.Suit.HEARTS);
+        assertFalse(service.isBidAllowed(illegalBid), "Level 8 bid should not be allowed");
+
+        // Test that level 0 bid is not allowed
+        Bid illegalBid2 = new Bid(0, Card.Suit.HEARTS);
+        assertFalse(service.isBidAllowed(illegalBid2), "Level 0 bid should not be allowed");
+
+        // Test that level 1 bid is allowed
+        Bid legalBid = new Bid(1, Card.Suit.HEARTS);
+        assertTrue(service.isBidAllowed(legalBid), "Level 1 bid should be allowed");
+
+        // Test that level 7 bid is allowed
+        Bid legalBid2 = new Bid(7, Card.Suit.HEARTS);
+        assertTrue(service.isBidAllowed(legalBid2), "Level 7 bid should be allowed");
+    }
+
+    @Test
     void testCurrentBidderIndexCycles() {
         int start = service.getCurrentBidderIndex();
         service.makeBid(new Bid(1, Card.Suit.CLUBS));

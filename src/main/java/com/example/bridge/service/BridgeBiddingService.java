@@ -111,6 +111,11 @@ public class BridgeBiddingService {
             return true;
         }
 
+        // Validate that standard bids have levels between 1 and 7
+        if (bid.isStandard() && (bid.getLevel() < 1 || bid.getLevel() > 7)) {
+            return false;
+        }
+
         Optional<Bid> lastStandardBidOpt = biddingHistory.stream()
                 .filter(b -> !b.isPass())
                 .reduce((first, second) -> second);
