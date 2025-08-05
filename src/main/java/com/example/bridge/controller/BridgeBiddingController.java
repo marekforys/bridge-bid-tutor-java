@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -34,13 +33,9 @@ public class BridgeBiddingController {
             // --- AUTO BIDDING LOGIC FOR SINGLE HAND MODE ON FIRST DEAL ---
             if ("single".equals(trainingMode)) {
                 int userSeatIndex = biddingService.getUserSeat().ordinal();
-                int nextBidderIndex = biddingService.getCurrentBidderIndex();
-                while (!biddingService.isBiddingFinished() && nextBidderIndex != userSeatIndex) {
-                    Player autoPlayer = Player.values()[nextBidderIndex];
-                    Hand autoHand = biddingService.getHandForPlayer(autoPlayer);
-                    Bid autoBid = biddingService.getSimpleNaturalBid(autoHand, biddingService.getBiddingHistory());
+                while (!biddingService.isBiddingFinished() && biddingService.getCurrentBidderIndex() != userSeatIndex) {
+                    Bid autoBid = biddingService.getSimpleNaturalBid(biddingService.getBiddingHistory());
                     biddingService.makeBid(autoBid);
-                    nextBidderIndex = biddingService.getCurrentBidderIndex();
                 }
             }
         }
@@ -66,6 +61,7 @@ public class BridgeBiddingController {
         model.addAttribute("hand", hand);
         model.addAttribute("handIndex", currentBidderIndex);
         model.addAttribute("handBySuit", hand.getSortedCardsBySuitName());
+        model.addAttribute("handRanksBySuit", hand.getSortedRankNamesBySuit());
         int totalPoints = 0;
         if (hand.getCards() != null) {
             for (Card card : hand.getCards()) {
@@ -104,6 +100,8 @@ public class BridgeBiddingController {
         model.addAttribute("currentBidder",
                 com.example.bridge.model.Player.values()[biddingService.getCurrentBidderIndex()]);
         model.addAttribute("biddingFinished", biddingService.isBiddingFinished());
+        model.addAttribute("canDouble", biddingService.isBidAllowed(Bid.doubleBid()));
+        model.addAttribute("canRedouble", biddingService.isBidAllowed(Bid.redoubleBid()));
         model.addAttribute("biddingSystem", biddingService.getBiddingSystem());
         model.addAttribute("allDeals", biddingService.getAllDeals());
         model.addAttribute("suitsOrdered", java.util.List.of(
@@ -180,9 +178,7 @@ public class BridgeBiddingController {
         if ("single".equals(trainingMode)) {
             int userSeatIndex = biddingService.getUserSeat().ordinal();
             while (!biddingService.isBiddingFinished() && biddingService.getCurrentBidderIndex() != userSeatIndex) {
-                Player currentBidder = Player.values()[biddingService.getCurrentBidderIndex()];
-                Hand autoHand = biddingService.getHandForPlayer(currentBidder);
-                Bid autoBid = biddingService.getSimpleNaturalBid(autoHand, biddingService.getBiddingHistory());
+                Bid autoBid = biddingService.getSimpleNaturalBid(biddingService.getBiddingHistory());
                 biddingService.makeBid(autoBid);
             }
         }
@@ -193,6 +189,8 @@ public class BridgeBiddingController {
     public String makeBid(@RequestParam(required = false) Integer level,
             @RequestParam(required = false) Card.Suit suit,
             @RequestParam(required = false) String pass,
+            @RequestParam(required = false) String doubleBid,
+            @RequestParam(required = false) String redoubleBid,
             @RequestParam(value = "biddingSystem", required = false) String biddingSystem,
             @RequestParam(value = "trainingMode", required = false) String trainingMode,
                     Model model) {
@@ -206,10 +204,15 @@ public class BridgeBiddingController {
         Bid bid;
         if (pass != null) {
             bid = Bid.pass();
+        } else if (doubleBid != null) {
+            bid = Bid.doubleBid();
+        } else if (redoubleBid != null) {
+            bid = Bid.redoubleBid();
         } else if (level != null && suit != null) {
             bid = new Bid(level, suit);
         } else {
-            return "redirect:/";
+            model.addAttribute("bidError", "Invalid bid action.");
+            return index(null, null, model);
         }
         if (!biddingService.isBidAllowed(bid)) {
             model.addAttribute("bidError", "Bid must be higher than previous bids.");
@@ -219,16 +222,10 @@ public class BridgeBiddingController {
         // --- AUTO BIDDING LOGIC FOR SINGLE HAND MODE ---
         if ("single".equals(trainingMode)) {
             int userSeatIndex = biddingService.getUserSeat().ordinal();
-            int nextBidderIndex = biddingService.getCurrentBidderIndex();
-            while (!biddingService.isBiddingFinished() && nextBidderIndex != userSeatIndex) {
-                Player autoPlayer = Player.values()[nextBidderIndex];
-                Hand autoHand = biddingService.getHandForPlayer(autoPlayer);
-                Bid autoBid = biddingService.getSimpleNaturalBid(autoHand, biddingService.getBiddingHistory());
-                if (!biddingService.isBidAllowed(autoBid)) {
-                    autoBid = Bid.pass();
-                }
+            // After user's bid, let AI bid until it's user's turn again
+            while (!biddingService.isBiddingFinished() && biddingService.getCurrentBidderIndex() != userSeatIndex) {
+                Bid autoBid = biddingService.getSimpleNaturalBid(biddingService.getBiddingHistory());
                 biddingService.makeBid(autoBid);
-                nextBidderIndex = biddingService.getCurrentBidderIndex();
             }
         }
         biddingService.saveDealIfFinished();
@@ -303,10 +300,13 @@ public class BridgeBiddingController {
         }
         model.addAttribute("deal", deal);
         List<Map<String, List<Card>>> handsBySuit = new java.util.ArrayList<>();
+        List<Map<String, List<String>>> handsRanksBySuit = new java.util.ArrayList<>();
         for (Hand h : deal.getHands()) {
             handsBySuit.add(h.getSortedCardsBySuitName());
+            handsRanksBySuit.add(h.getSortedRankNamesBySuit());
         }
         model.addAttribute("handsBySuit", handsBySuit);
+        model.addAttribute("handsRanksBySuit", handsRanksBySuit);
         model.addAttribute("suitsOrdered", java.util.List.of(
             com.example.bridge.model.Card.Suit.SPADES,
             com.example.bridge.model.Card.Suit.HEARTS,
@@ -351,6 +351,15 @@ public class BridgeBiddingController {
             return "-";
         if (bid.isPass())
             return "Pass";
+        if (bid.isDouble())
+            return "Double";
+        if (bid.isRedouble())
+            return "Redouble";
+        
+        // Handle standard bids with suits
+        if (bid.getSuit() == null)
+            return "Unknown";
+            
         String suitIcon;
         switch (bid.getSuit()) {
             case SPADES:

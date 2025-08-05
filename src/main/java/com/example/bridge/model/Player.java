@@ -18,18 +18,21 @@ public enum Player {
         }
     }
 
-    public Player getPartner() {
-        switch (this) {
-            case NORTH:
-                return SOUTH;
-            case SOUTH:
-                return NORTH;
-            case EAST:
-                return WEST;
-            case WEST:
-                return EAST;
-            default:
-                throw new IllegalStateException();
+    public boolean isPartner(Player other) {
+        if (this == NORTH || this == SOUTH) {
+            return other == NORTH || other == SOUTH;
         }
+        if (this == EAST || this == WEST) {
+            return other == EAST || other == WEST;
+        }
+        return false;
+    }
+
+    public Player getPartner() {
+        return values()[(this.ordinal() + 2) % 4];
+    }
+
+    public boolean isOpponent(Player other) {
+        return this != other && !isPartner(other);
     }
 }
