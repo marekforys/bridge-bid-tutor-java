@@ -290,6 +290,10 @@
             transition: background-color 0.2s ease;
         }
         
+        .dropdown-items div.suit-red {
+            color: #ef4444;
+        }
+        
         .dropdown-items div:hover {
             background: rgba(74, 222, 128, 0.1);
         }
@@ -562,15 +566,15 @@
                             <label class="form-label">Suit</label>
                             <div class="custom-dropdown">
                                 <div id="dropdown-selected" class="dropdown-selected" onclick="toggleDropdown()">
-                                    <span class="suit-symbol">♠</span>
+                                    <span class="suit-symbol suit-black">♠</span>
                                     <span>↓</span>
                                 </div>
                                 <div id="dropdown-items" class="dropdown-items">
-                                    <div onclick="selectSuit('SPADES', '♠')" class="suit-black">♠ Spades</div>
-                                    <div onclick="selectSuit('HEARTS', '♥')" class="suit-red">♥ Hearts</div>
-                                    <div onclick="selectSuit('DIAMONDS', '♦')" class="suit-red">♦ Diamonds</div>
-                                    <div onclick="selectSuit('CLUBS', '♣')" class="suit-black">♣ Clubs</div>
-                                    <div onclick="selectSuit('NOTRUMP', 'NT')">NT No Trump</div>
+                                    <div onclick="selectSuit('SPADES', '♠')" class="suit-black">♠</div>
+                                    <div onclick="selectSuit('HEARTS', '♥')" class="suit-red">♥</div>
+                                    <div onclick="selectSuit('DIAMONDS', '♦')" class="suit-red">♦</div>
+                                    <div onclick="selectSuit('CLUBS', '♣')" class="suit-black">♣</div>
+                                    <div onclick="selectSuit('NOTRUMP', 'NT')">NT</div>
                                 </div>
                             </div>
                             <input type="hidden" id="selectedSuit" name="suit" value="SPADES" />
