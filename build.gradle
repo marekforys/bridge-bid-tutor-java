@@ -28,3 +28,25 @@ test {
     testLogging.showStandardStreams = true
     jvmArgs '-Dnet.bytebuddy.experimental=true'
 }
+
+// Task to build React frontend
+task buildReact(type: Exec) {
+    workingDir 'frontend'
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/c', 'npm run build'
+    } else {
+        commandLine 'npm', 'run', 'build'
+    }
+}
+
+// Task to copy React build to Spring Boot static resources
+task copyReactBuild(type: Copy) {
+    dependsOn buildReact
+    from 'frontend/build'
+    into 'src/main/resources/static'
+}
+
+// Make bootJar depend on copying React build
+bootJar {
+    dependsOn copyReactBuild
+}
