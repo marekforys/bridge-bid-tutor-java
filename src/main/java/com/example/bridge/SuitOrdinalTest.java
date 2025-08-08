@@ -1,1 +1,0 @@
-public class SuitOrdinalTest { public static void main(String[] args) { for (com.example.bridge.model.Card.Suit suit : com.example.bridge.model.Card.Suit.values()) { System.out.println(suit + ": " + suit.ordinal()); } } }
