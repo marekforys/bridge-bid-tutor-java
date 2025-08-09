@@ -31,6 +31,7 @@ export interface GameState {
   dealer: string;
   dealerIndex: number;
   userSeat: string;
+  userSeatIndex: number;
   currentBidderIndex: number;
   biddingFinished: boolean;
   biddingSystem: string;

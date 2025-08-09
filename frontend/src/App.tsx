@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { GameState, BidRequest } from './types';
 import { BridgeAPI } from './api';
 import BiddingTable from './components/BiddingTable';
@@ -16,11 +16,7 @@ const App: React.FC = () => {
   const [trainingMode, setTrainingMode] = useState<string>('single');
   const [biddingSystem, setBiddingSystem] = useState<string>('2/1 Game Forcing');
 
-  useEffect(() => {
-    loadGameState();
-  }, []);
-
-  const loadGameState = async () => {
+  const loadGameState = useCallback(async () => {
     try {
       setLoading(true);
       const state = await BridgeAPI.getGameState(biddingSystem, trainingMode);
@@ -31,7 +27,11 @@ const App: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [biddingSystem, trainingMode]);
+
+  useEffect(() => {
+    loadGameState();
+  }, [loadGameState]);
 
   const handleNewDeal = async () => {
     try {
@@ -135,7 +135,7 @@ const App: React.FC = () => {
                   
                   <HandDisplay
                     hand={gameState.currentHand}
-                    isCurrentPlayer={gameState.currentBidderIndex === gameState.userSeat}
+                    isCurrentPlayer={gameState.currentBidderIndex === gameState.userSeatIndex}
                   />
 
                   {!gameState.biddingFinished && (

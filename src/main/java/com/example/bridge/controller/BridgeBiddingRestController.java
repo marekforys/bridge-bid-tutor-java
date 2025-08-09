@@ -48,6 +48,7 @@ public class BridgeBiddingRestController {
         gameState.put("dealer", biddingService.getCurrentDealer());
         gameState.put("dealerIndex", biddingService.getCurrentDealer().ordinal());
         gameState.put("userSeat", biddingService.getUserSeat());
+        gameState.put("userSeatIndex", biddingService.getUserSeat().ordinal());
         gameState.put("currentBidderIndex", biddingService.getCurrentBidderIndex());
         gameState.put("biddingFinished", biddingService.isBiddingFinished());
         gameState.put("biddingSystem", biddingService.getBiddingSystem());
