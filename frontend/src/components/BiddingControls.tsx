@@ -39,7 +39,7 @@ const BiddingControls: React.FC<BiddingControlsProps> = ({ gameState, onMakeBid 
     onMakeBid({ redouble: true });
   };
 
-  const isUserTurn = gameState.currentBidderIndex.toString() === gameState.userSeat;
+  const isUserTurn = gameState.currentBidderIndex === gameState.userSeatIndex;
   const canDouble = gameState.biddingHistory.length > 0 && 
     !gameState.biddingHistory[gameState.biddingHistory.length - 1].isPass;
   const canRedouble = gameState.biddingHistory.length > 0 && 
