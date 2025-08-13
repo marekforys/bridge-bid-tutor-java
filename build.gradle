@@ -50,3 +50,8 @@ task copyReactBuild(type: Copy) {
 bootJar {
     dependsOn copyReactBuild
 }
+
+// Ensure that :copyReactBuild runs before :processResources
+processResources.dependsOn(copyReactBuild)
+// Alternatively, if you want to control order but not strict dependency:
+// processResources.mustRunAfter(copyReactBuild)
