@@ -99,10 +99,74 @@ src/
 
 ## Development
 
-### Running Tests
+### Testing
+
+#### Backend Tests (Spring Boot)
+Run all backend unit tests:
 ```bash
 ./gradlew test
 ```
+
+Run tests with detailed output:
+```bash
+./gradlew test --info
+```
+
+Run specific test class:
+```bash
+./gradlew test --tests "com.example.bridge.service.BridgeBiddingServiceTest"
+```
+
+**Note for Java 24 Users**: The project includes compatibility fixes for Mockito/Byte Buddy:
+- Uses `mockito-inline:5.2.0` instead of `mockito-core`
+- Includes JVM argument `-Dnet.bytebuddy.experimental=true` in test configuration
+- All 45+ tests should pass successfully
+
+#### Frontend Tests (React)
+Navigate to frontend directory and run tests:
+```bash
+cd frontend
+npm test
+```
+
+Run tests in CI mode (non-interactive):
+```bash
+cd frontend
+npm test -- --ci --coverage
+```
+
+Run tests with coverage report:
+```bash
+cd frontend
+npm test -- --coverage --watchAll=false
+```
+
+#### Integration Testing
+To test the full application stack:
+
+1. **Start the backend** (in one terminal):
+   ```bash
+   ./gradlew bootRun
+   ```
+
+2. **Start the frontend** (in another terminal):
+   ```bash
+   cd frontend
+   npm start
+   ```
+
+3. **Manual Testing Checklist**:
+   - ✅ Backend API accessible at http://localhost:8080/api/game-state
+   - ✅ Frontend UI accessible at http://localhost:3000
+   - ✅ New deal creation works
+   - ✅ Bidding functionality works
+   - ✅ AI opponents respond correctly
+   - ✅ Deal history is saved and retrievable
+
+#### Test Coverage
+- **Backend**: JUnit 5 tests cover service layer, controllers, and models
+- **Frontend**: Jest and React Testing Library for component testing
+- **Database**: H2 in-memory database used for testing (no external dependencies)
 
 ### Development Mode
 - Backend: `./gradlew bootRun` (auto-restart on changes)
