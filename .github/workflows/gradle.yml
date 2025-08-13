@@ -39,7 +39,7 @@ jobs:
        node-version: '18'
 
     - name: Install frontend dependencies
-      run: cd bridge-bidding-tutor-frontend && npm ci
+      run: cd frontend && npm ci
       
     - name: Build with Gradle Wrapper
       run: ./gradlew build
